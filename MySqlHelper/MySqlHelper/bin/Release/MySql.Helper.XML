@@ -61,7 +61,7 @@
             </summary>
             <param name="options"></param>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.InsertRow(System.String,System.String,System.Collections.Generic.IEnumerable{MySql.MysqlHelper.ColumnData},System.String,System.Boolean,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.MultiCon.InsertRow(System.String,System.String,System.Collections.Generic.IEnumerable{MySql.MysqlHelper.ColumnData},System.String,System.Boolean)">
             <summary>
             Inserts a row
             </summary>
@@ -70,7 +70,7 @@
             <param name="listColData">Columns and their data</param>
             <param name="updateWhere">Where query if to update existing row</param>
             <param name="onDupeUpdate">If duplicate, update duplicate with new values</param>
-            <param name="returnUpdateCount">Returns updated rows count, else id of inserted row</param>
+            <returns>Returns last insertion ID</returns>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object})">
             <summary>
@@ -140,7 +140,7 @@
             Rolls the transaction back
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.InsertRow(System.String,System.String,System.Collections.Generic.IEnumerable{MySql.MysqlHelper.ColumnData},System.String,System.Boolean,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.InsertRow(System.String,System.String,System.Collections.Generic.IEnumerable{MySql.MysqlHelper.ColumnData},System.String,System.Boolean)">
             <summary>
             Inserts a row
             </summary>
@@ -149,7 +149,7 @@
             <param name="listColData">Columns and their data</param>
             <param name="updateWhere">Where query if to update existing row</param>
             <param name="onDupeUpdate">If duplicate, update duplicate with new values</param>
-            <param name="returnUpdateCount">Returns updated rows count, else id of inserted row</param>
+            <returns>Returns last insertion ID</returns>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.SendQuery(System.String)">
             <summary>

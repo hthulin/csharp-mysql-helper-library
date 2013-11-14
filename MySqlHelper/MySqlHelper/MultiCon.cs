@@ -29,12 +29,12 @@ namespace MySql.MysqlHelper
         /// <param name="listColData">Columns and their data</param>
         /// <param name="updateWhere">Where query if to update existing row</param>
         /// <param name="onDupeUpdate">If duplicate, update duplicate with new values</param>
-        /// <param name="returnUpdateCount">Returns updated rows count, else id of inserted row</param>
-        public override long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, string updateWhere = null, bool onDupeUpdate = false, bool returnUpdateCount = false)
+        /// <returns>Returns last insertion ID</returns>
+        public override long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, string updateWhere = null, bool onDupeUpdate = false)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                return base.InsertRow(mysqlCommand, database, table, listColData, updateWhere, onDupeUpdate, returnUpdateCount);
+                return base.InsertRow(mysqlCommand, database, table, listColData, updateWhere, onDupeUpdate);
         }
 
         /// <summary>

@@ -52,7 +52,7 @@ namespace MySql.MysqlHelper
             return mysqlConnection.State == ConnectionState.Open;
         }
 
-        internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, IEnumerable<ColumnData> listColData, string updateWhere = null, bool onDupeUpdate = false, bool returnUpdateCount = false)
+        internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, IEnumerable<ColumnData> listColData, string updateWhere = null, bool onDupeUpdate = false)
         {
             logData.IncreaseQueries(1);
 
@@ -66,7 +66,7 @@ namespace MySql.MysqlHelper
 
             if (updateWhere == null)
             {
-                mysqlCommand.CommandText = "insert into `" + database + "`.`" + table + "` (`" + string.Join("`,`", listColData.Select(n => n.columnName)) + "`) values (" + valuetags + ")";
+                mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (`" + string.Join("`,`", listColData.Select(n => n.columnName)) + "`) VALUES (" + valuetags + ")";
 
 
                 for (int i = 0; i < listColData.Count(); i++)
@@ -74,7 +74,7 @@ namespace MySql.MysqlHelper
 
                 if (onDupeUpdate)
                 {
-                    mysqlCommand.CommandText += " on duplicate key update ";
+                    mysqlCommand.CommandText += " ON DUPLICATE KEY UPDATE ";
                     for (int col = 0; col < listColData.Count(); col++)
                     {
                         if (col != 0) mysqlCommand.CommandText += ",";
@@ -88,17 +88,9 @@ namespace MySql.MysqlHelper
 
                 for (int i = 0; i < listColData.Count(); i++)
                 {
-                    mysqlCommand.CommandText += "update `" + database + "`.`" + table + "` SET `" + listColData.ElementAt(i).columnName + "`=@p" + i.ToString() + "x" + " WHERE " + updateWhere + " LIMIT 1;";
+                    mysqlCommand.CommandText += "UPDATE `" + database + "`.`" + table + "` SET `" + listColData.ElementAt(i).columnName + "`=@p" + i.ToString() + "x" + " WHERE " + updateWhere + " LIMIT 1;";
                     mysqlCommand.Parameters.AddWithValue("@p" + i.ToString() + "x", listColData.ElementAt(i).data);
                 }
-            }
-
-            if (returnUpdateCount)
-            {
-                int countUpdates = mysqlCommand.ExecuteNonQuery();
-                logData.IncreaseUpdates((ulong)countUpdates);
-                mysqlCommand.Parameters.Clear();
-                return countUpdates;
             }
 
             logData.IncreaseUpdates((ulong)mysqlCommand.ExecuteNonQuery());
@@ -107,7 +99,7 @@ namespace MySql.MysqlHelper
             return mysqlCommand.LastInsertedId;
         }
 
-        public abstract long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, string updateWhere = null, bool onDupeUpdate = false, bool returnUpdateCount = false);
+        public abstract long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, string updateWhere = null, bool onDupeUpdate = false);
 
         internal int SendQuery(MySqlCommand mysqlCommand, string query)
         {
