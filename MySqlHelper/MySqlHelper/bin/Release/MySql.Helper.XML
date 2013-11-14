@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MySqlHelper</name>
+    </assembly>
+    <members>
+        <member name="M:MySql.MysqlHelper.Default.SetConnectionString(MySql.MysqlHelper.ConnectionString)">
+            <summary>
+            Sets connection string
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Default.OpenConnection(MySql.Data.MySqlClient.MySqlConnection,System.Int32)">
+            <summary>
+            Opens a connection to the server
+            </summary>
+        </member>
+        <member name="P:MySql.MysqlHelper.Default.connectionString">
+            <summary>
+            Current connectionstring in use
+            </summary>
+        </member>
+        <member name="T:MySql.MysqlHelper.Log">
+            <summary>
+            Log class
+            </summary>
+        </member>
+        <member name="T:MySql.MysqlHelper.ColumnData">
+            <summary>
+            Container class for column name and column data
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.ColumnData.#ctor(System.String,System.Object)">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="T:MySql.MysqlHelper.ConnectionString">
+            <summary>
+            Helper for generating connection string
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.ConnectionString.#ctor(System.String,System.String,System.String,System.UInt32)">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.ConnectionString.ToString">
+            <summary>
+            ToString() override
+            </summary>
+            <returns>Returns a valid connection string</returns>
+        </member>
+        <member name="T:MySql.MysqlHelper.MultiCon">
+            <summary>
+            Opens and closes a connection for each query. When not doing transactions or working with memory tables
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.#ctor(MySql.MysqlHelper.ConnectionString)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.InsertRow(System.String,System.String,System.Collections.Generic.IEnumerable{MySql.MysqlHelper.ColumnData},System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Inserts a row
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="listColData">Columns and their data</param>
+            <param name="updateWhere">Where query if to update existing row</param>
+            <param name="onDupeUpdate">If duplicate, update duplicate with new values</param>
+            <param name="returnUpdateCount">Returns updated rows count, else id of inserted row</param>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Sends entire datatable to database. Name of column in datatable should equal name of column in database table
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.Data.DataTable)">
+            <summary>
+            Sends an entire datatable to specified table
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetFirst``1(System.String)">
+            <summary>
+            Returns a list containing the first column
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObject(System.String)">
+            <summary>
+            Returns a field from the server as a object
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObject``1(System.String)">
+            <summary>
+            Returns a field from the server as specified type 
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.SendQuery(System.String)">
+            <summary>
+            Sends query to server
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetDataTable(System.String)">
+            <summary>
+            Returns all selected data as a datatable
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetMysqlConnection">
+            <summary>
+            Returns the default connecition data
+            </summary>
+        </member>
+        <member name="T:MySql.MysqlHelper.OneCon">
+            <summary>
+            Uses only one connection. To be used with transactions and memory tables etc
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.#ctor(MySql.MysqlHelper.ConnectionString,System.Boolean)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="options"></param>
+            <param name="isTransaction">Should be true when a transaction is to follow. If not, queries will be carried out as made</param>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.Dispose">
+            <summary>
+            Disposes all data. Should always run after use of OneCon
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.Commit(System.Boolean)">
+            <summary>
+            Commits transaction
+            </summary>
+            <param name="respring">if a new transaction is to follow, this should be true</param>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.Rollback">
+            <summary>
+            Rolls the transaction back
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.InsertRow(System.String,System.String,System.Collections.Generic.IEnumerable{MySql.MysqlHelper.ColumnData},System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Inserts a row
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="listColData">Columns and their data</param>
+            <param name="updateWhere">Where query if to update existing row</param>
+            <param name="onDupeUpdate">If duplicate, update duplicate with new values</param>
+            <param name="returnUpdateCount">Returns updated rows count, else id of inserted row</param>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.SendQuery(System.String)">
+            <summary>
+            Sends query to server
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetObject(System.String)">
+            <summary>
+            Returns a field from the server as a object
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetObject``1(System.String)">
+            <summary>
+            Returns a field from the server as specified type 
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetDataTable(System.String)">
+            <summary>
+            Returns all selected data as a datatable
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Sends an entire collection to specified column
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.Data.DataTable)">
+            <summary>
+            Sends an entire datatable to specified table
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetFirst``1(System.String)">
+            <summary>
+            Returns a list containing the first field of each row
+            </summary>
+        </member>
+    </members>
+</doc>
