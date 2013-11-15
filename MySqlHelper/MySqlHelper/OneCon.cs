@@ -55,7 +55,6 @@ namespace MySql.MysqlHelper
         {
             mysqlTransaction.Commit();
 
-
             if (respring) // Will make it possible to perform another transaction
             {
                 Dispose();

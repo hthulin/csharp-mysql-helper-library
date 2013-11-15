@@ -13,7 +13,7 @@ namespace MySql.MysqlHelper
         /// Current connectionstring in use
         /// </summary>
         public string connectionString { get; set; }
-        private ConnectionString connectionStringOptions;
+        private ConnectionString connectionStringOptions = null;
         public Log logData = new Log();
 
         /// <summary>
@@ -28,6 +28,11 @@ namespace MySql.MysqlHelper
         public ConnectionString GetConnectionOptions()
         {
             return this.connectionStringOptions;
+        }
+
+        public string GetConnectionString()
+        {
+            return this.connectionString;
         }
 
         /// <summary>

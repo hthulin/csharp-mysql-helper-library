@@ -104,12 +104,39 @@ namespace MySql.MysqlHelper
         public string username;
         public string password;
         public uint port = 3306;
+
+        /// <summary>
+        /// When true, the MySqlConnection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool. Recognized values are true, false, yes, and no.
+        /// </summary>
         public bool pooling = true;
+        /// <summary>
+        /// Setting this option to true enables compression of packets exchanged between the client and the server. This exchange is defined by the MySQL client/server protocol. Compression is used if both client and server support ZLIB compression, and the client has requested compression using this option. A compressed packet header is: packet length (3 bytes), packet number (1 byte), and Uncompressed Packet Length (3 bytes). The Uncompressed Packet Length is the number of bytes in the original, uncompressed packet. If this is zero, the data in this packet has not been compressed. When the compression protocol is in use, either the client or the server may compress packets. However, compression will not occur if the compressed length is greater than the original length. Thus, some packets will contain compressed data while other packets will not. 
+        /// </summary>
         public bool compress = false;
+        /// <summary>
+        /// Sets the default value of the command timeout to be used. This does not supersede the individual command timeout property on an individual command object. If you set the command timeout property, that will be used. This option was added in Connector/Net 5.1.4
+        /// </summary>
         public uint defaultCommandTimeout = 5000;
+        /// <summary>
+        /// The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
+        /// </summary>
         public uint connectionTimeout = 5000;
+        /// <summary>
+        /// True to have MySqlDataReader.GetValue() and MySqlDataReader.GetDateTime() return DateTime.MinValue for date or datetime columns that have disallowed values.
+        /// </summary>
         public bool convertZeroDateTime = true;
+        /// <summary>
+        /// When true, multiple SQL statements can be sent with one command execution. Note: starting with MySQL 4.1.1, batch statements should be separated by the server-defined separator character. Statements sent to earlier versions of MySQL should be separated by ';'
+        /// </summary>
+        public bool allowBatch = true;
+        /// <summary>
+        /// Setting this to true indicates that the provider expects user variables in the SQL. This option was added in Connector/Net version 5.2.2.
+        /// </summary>
         public bool allowUserVariables = true;
+        /// <summary>
+        /// If set to True, MySqlDataReader.GetValue() returns a MySqlDateTime object for date or datetime columns that have disallowed values, such as zero datetime values, and a System.DateTime object for valid values. If set to False (the default setting) it causes a System.DateTime object to be returned for all valid values and an exception to be thrown for disallowed values, such as zero datetime values.
+        /// </summary>
+        public bool allowZeroDatetime = false;
 
         /// <summary>
         /// Constructor
@@ -138,7 +165,9 @@ namespace MySql.MysqlHelper
             ";DefaultCommandTimeout=" + defaultCommandTimeout.ToString() +
             ";ConvertZeroDateTime=" + convertZeroDateTime.ToString() +
             ";Pooling=" + pooling.ToString() +
-            ";Compress=" + compress.ToString();
+            ";Compress=" + compress.ToString() +
+            ";AllowBatch=" + allowBatch.ToString() +
+            ";AllowZeroDateTime=" + allowZeroDatetime.ToString();
         }
     }
 }
