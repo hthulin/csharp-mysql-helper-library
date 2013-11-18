@@ -47,10 +47,9 @@ namespace MySql.MysqlHelper
                     mysqlConnection.Open();
                     break;
                 }
-                catch (MySqlException ex)
+                catch (MySqlException)
                 {
-                    System.Diagnostics.Debug.WriteLine("OpenConnect failed attempt " + (i + 1) + "\n" + ex);
-                    if (i == attempts - 1) throw ex;
+                    if (i == attempts - 1) throw;
                     System.Threading.Thread.Sleep(50);
                 }
             }

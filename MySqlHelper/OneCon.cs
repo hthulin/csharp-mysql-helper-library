@@ -42,7 +42,7 @@ namespace MySql.MysqlHelper
             Dispose(true);
         }
 
-        public virtual void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
             {
