@@ -35,7 +35,7 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
-        /// Dispose of resources. Should always run after use of OneCon
+        /// Dispose of resources. Should run after use of OneCon
         /// </summary>
         public void Dispose()
         {
