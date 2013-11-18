@@ -146,39 +146,34 @@ namespace MySql.MysqlHelper
 
         public abstract DataTable GetDataTable(string query);
 
-        internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, DataTable dataTable)
+        internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, DataTable dataTable, int updateBatchSize = 100)
         {
             logData.IncreaseQueries(1);
 
-            List<string> columnNames = new List<string>();
-            List<string> columnIds = new List<string>();
+            Dictionary<string, string> dictIds = new Dictionary<string, string>();
+
+            int i = 0;
 
             foreach (DataColumn column in dataTable.Columns)
             {
-                columnNames.Add(column.ColumnName);
-                columnIds.Add("?s" + columnNames.Count().ToString());
+                dictIds.Add(column.ColumnName, "?s" + (i++).ToString());
+                mysqlCommand.Parameters.Add(dictIds[column.ColumnName], MySqlDbType.String).SourceColumn = column.ColumnName;
             }
 
-            mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (" + string.Join(",", columnNames) + ") VALUES (" + string.Join(",", columnIds) + ");";
-
+            mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (" + string.Join(",", dictIds.Select(n => n.Key)) + ") VALUES (" + string.Join(",", dictIds.Select(n => n.Value)) + ");";
             mysqlCommand.CommandType = CommandType.Text;
             mysqlCommand.UpdatedRowSource = UpdateRowSource.None;
-
-            for (int i = 0; i < columnNames.Count; i++)
-            {
-                mysqlCommand.Parameters.Add(columnIds[i], MySqlDbType.String).SourceColumn = columnNames[i];
-            }
 
             using (MySqlDataAdapter adapter = new MySqlDataAdapter())
             {
                 adapter.ContinueUpdateOnError = true;
                 adapter.InsertCommand = mysqlCommand;
-                adapter.UpdateBatchSize = 100;
+                adapter.UpdateBatchSize = updateBatchSize;
                 logData.IncreaseUpdates((ulong)adapter.Update(dataTable));
             }
         }
 
-        public abstract void BulkSend(string database, string table, DataTable dataTable);
+        public abstract void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100);
 
         internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, string column, IEnumerable<object> listData)
         {

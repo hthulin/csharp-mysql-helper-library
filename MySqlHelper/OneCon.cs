@@ -153,11 +153,11 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
-        /// Sends an entire datatable to specified table
+        /// Sends an entire datatable to specified table. Make sure that column names of table correspond to database
         /// </summary>
-        public override void BulkSend(string database, string table, DataTable dataTable)
+        public override void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100)
         {
-            base.BulkSend(this.mysqlCommand, database, table, dataTable);
+            base.BulkSend(this.mysqlCommand, database, table, dataTable, updateBatchSize);
         }
 
         /// <summary>

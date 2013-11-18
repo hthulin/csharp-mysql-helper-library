@@ -153,9 +153,9 @@
             Sends entire datatable to database. Name of column in datatable should equal name of column in database table
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.Data.DataTable)">
+        <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Int32)">
             <summary>
-            Sends an entire datatable to specified table
+            Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetFirst``1(System.String)">
@@ -262,9 +262,9 @@
             Sends an entire collection to specified column
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.Data.DataTable)">
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Int32)">
             <summary>
-            Sends an entire datatable to specified table
+            Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetFirst``1(System.String)">
