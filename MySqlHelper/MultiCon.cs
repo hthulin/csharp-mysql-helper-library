@@ -93,11 +93,20 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
-        /// Returns a field from the server as specified type 
+        /// Returns a field from the server as specified type using explicit type conversion.
+        /// Will throw exception if type is wrong
         /// </summary>
         public T GetObject<T>(string query)
         {
             return (T)GetObject(query);
+        }
+
+        /// <summary>
+        /// Parses selected field value, making it less vulnerable for different types (int to uint etc)
+        /// </summary>
+        public T GetObjectParse<T>(string query)
+        {
+            return base.ParseObject<T>(GetObject(query));
         }
 
         /// <summary>

@@ -112,6 +112,7 @@ namespace MySql.MysqlHelper
             return base.UpdateRow(this.mysqlCommand, database, table, listColData, where, limit);
         }
 
+ 
         /// <summary>
         /// Sends query to server
         /// </summary>
@@ -128,12 +129,19 @@ namespace MySql.MysqlHelper
             return base.GetObject(this.mysqlCommand, query);
         }
 
-        /// <summary>
-        /// Returns a field from the server as specified type 
-        /// </summary>
+        /// Returns a field from the server as specified type using explicit type conversion.
+        /// Will throw exception if type is wrong
         public T GetObject<T>(string query)
         {
             return (T)GetObject(query);
+        }
+
+        /// <summary>
+        /// Parses selected field value, making it less vulnerable for different types (int to uint etc)
+        /// </summary>
+        public T GetObjectParse<T>(string query)
+        {
+            return base.ParseObject<T>(GetObject(query));
         }
 
         /// <summary>

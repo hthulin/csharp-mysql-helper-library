@@ -204,5 +204,37 @@ namespace MySql.MysqlHelper
 
         public abstract IEnumerable<T> GetFirst<T>(string query);
 
+        internal T ParseObject<T>(object o)
+        {
+            if (typeof(T) == typeof(Int32))
+                return (T)Convert.ChangeType(int.Parse(o.ToString()), typeof(T));
+
+            if (typeof(T) == typeof(UInt32))
+                return (T)Convert.ChangeType(uint.Parse(o.ToString()), typeof(T));
+
+            if (typeof(T) == typeof(long))
+                return (T)Convert.ChangeType(long.Parse(o.ToString()), typeof(T));
+
+            if (typeof(T) == typeof(ulong))
+                return (T)Convert.ChangeType(ulong.Parse(o.ToString()), typeof(T));
+
+            if (typeof(T) == typeof(double))
+                return (T)Convert.ChangeType(double.Parse(o.ToString().Replace(',', '.')), typeof(T), System.Globalization.CultureInfo.InvariantCulture);
+
+            if (typeof(T) == typeof(float))
+                return (T)Convert.ChangeType(float.Parse(o.ToString().Replace(',', '.')), typeof(T), System.Globalization.CultureInfo.InvariantCulture);
+
+            if (typeof(T) == typeof(string))
+                return (T)Convert.ChangeType(o.ToString(), typeof(T));
+
+            if (typeof(T) == typeof(bool))
+                return (T)Convert.ChangeType(bool.Parse(o.ToString()), typeof(T));
+
+            if (typeof(T).IsEnum)
+                return (T)Convert.ChangeType(Enum.Parse(typeof(T), o.ToString()), typeof(T));
+
+            throw new Exception("No such type defined for parsing");
+        }
+
     }
 }

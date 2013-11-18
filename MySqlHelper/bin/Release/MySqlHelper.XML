@@ -170,7 +170,13 @@
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetObject``1(System.String)">
             <summary>
-            Returns a field from the server as specified type 
+            Returns a field from the server as specified type using explicit type conversion.
+            Will throw exception if type is wrong
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObjectParse``1(System.String)">
+            <summary>
+            Parses selected field value, making it less vulnerable for different types (int to uint etc)
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.SendQuery(System.String)">
@@ -248,8 +254,12 @@
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetObject``1(System.String)">
+            Returns a field from the server as specified type using explicit type conversion.
+            Will throw exception if type is wrong
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetObjectParse``1(System.String)">
             <summary>
-            Returns a field from the server as specified type 
+            Parses selected field value, making it less vulnerable for different types (int to uint etc)
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetDataTable(System.String)">
