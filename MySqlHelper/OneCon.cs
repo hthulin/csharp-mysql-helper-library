@@ -16,6 +16,7 @@ namespace MySql.MysqlHelper
         private MySqlCommand mysqlCommand = null;
         private MySqlTransaction mysqlTransaction = null;
         private bool isTransaction = true;
+        private bool disposed = false;
 
         /// <summary>
         /// Constructor
@@ -34,16 +35,26 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
-        /// Disposes all data. Should always run after use of OneCon
+        /// Dispose of resources. Should always run after use of OneCon
         /// </summary>
         public void Dispose()
         {
-            if (mysqlTransaction != null) mysqlTransaction.Dispose();
-            if (mysqlCommand != null) mysqlCommand.Dispose();
-            if (mysqlConnection != null)
+            Dispose(true);
+        }
+
+        public virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
             {
-                mysqlConnection.Close();
-                mysqlConnection.Dispose();
+                if (mysqlTransaction != null) mysqlTransaction.Dispose();
+                if (mysqlCommand != null) mysqlCommand.Dispose();
+                if (mysqlConnection != null)
+                {
+                    mysqlConnection.Close();
+                    mysqlConnection.Dispose();
+                }
+
+                this.disposed = true;
             }
         }
 
@@ -84,7 +95,7 @@ namespace MySql.MysqlHelper
         /// <returns>Returns last insertion ID</returns>
         public override long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, bool onDupeUpdate = false)
         {
-            return base.InsertRow(this.mysqlCommand, database, table, listColData,  onDupeUpdate);
+            return base.InsertRow(this.mysqlCommand, database, table, listColData, onDupeUpdate);
         }
 
         /// <summary>
