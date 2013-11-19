@@ -65,7 +65,7 @@ namespace MySql.MysqlHelper
         /// <summary>
         /// Sends an entire datatable to specified table. Make sure that column names of table correspond to database
         /// </summary>
-        public override void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize=100)
+        public override void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
@@ -74,12 +74,13 @@ namespace MySql.MysqlHelper
 
         /// <summary>
         /// Returns a list containing the first column
+        /// <param name="parse">Parses the object as a string instead of explicit conversion</param>
         /// </summary>
-        public override IEnumerable<T> GetFirst<T>(string query)
+        public override IEnumerable<T> GetFirst<T>(string query, bool parse = false)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                return base.GetFirst<T>(mysqlCommand, query);
+                return base.GetFirst<T>(mysqlCommand, query, parse);
         }
 
         /// <summary>
@@ -102,7 +103,8 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
-        /// Parses selected field value, making it less vulnerable for different types (int to uint etc)
+        /// Parses selected field value, making it less vulnerable for different types 
+        /// (int -> uint when you know that the value should be above 0 etc)
         /// </summary>
         public T GetObjectParse<T>(string query)
         {

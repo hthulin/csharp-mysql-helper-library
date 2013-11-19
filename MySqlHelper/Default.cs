@@ -14,7 +14,11 @@ namespace MySql.MysqlHelper
         /// </summary>
         public string connectionString { get; set; }
         private ConnectionString connectionStringOptions = null;
+
         public Log logData = new Log();
+        private static readonly object _lock = new object();
+        private static uint ids = 0;
+        public readonly uint id = GetID();
 
         /// <summary>
         /// Sets connection string
@@ -36,6 +40,21 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
+        /// Generates instance ID
+        /// </summary>
+        /// <returns>Current Instance ID</returns>
+        private static uint GetID()
+        {
+            lock (_lock)
+                return ids++;
+        }
+
+        public void DiagnosticOutput(string method, string text)
+        {
+            System.Diagnostics.Debug.WriteLine(string.Format("({0}) MySQL {1} : {2}", this.id, method, text));
+        }
+
+        /// <summary>
         /// Opens a connection to the server
         /// </summary>
         public bool OpenConnection(MySqlConnection mysqlConnection, int attempts)
@@ -50,14 +69,18 @@ namespace MySql.MysqlHelper
                 catch (MySqlException)
                 {
                     if (i == attempts - 1) throw;
+                    System.Diagnostics.Debug.WriteLine("Exception. Trying to connect again", "(" + id + ") MySQL");
                     System.Threading.Thread.Sleep(50);
                 }
             }
             return mysqlConnection.State == ConnectionState.Open;
         }
 
+        public abstract long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, bool onDupeUpdate = false);
         internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, IEnumerable<ColumnData> listColData, bool onDupeUpdate = false)
         {
+            DiagnosticOutput("InsertRow", "Database " + database + " table " + table + "data " + string.Join(", ", listColData));
+
             logData.IncreaseQueries(1);
 
             int i = 0;
@@ -71,7 +94,6 @@ namespace MySql.MysqlHelper
             if (onDupeUpdate)
             {
                 i = 0;
-
                 mysqlCommand.CommandText += " ON DUPLICATE KEY UPDATE `" + string.Join(", `", listColData.Select(n => n.columnName + "`=@" + (i++)));
             }
 
@@ -82,10 +104,11 @@ namespace MySql.MysqlHelper
             return mysqlCommand.LastInsertedId;
         }
 
-        public abstract long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, bool onDupeUpdate = false);
-
+        public abstract long UpdateRow(string database, string table, IEnumerable<ColumnData> listColData, string where = null, int limit = 0);
         internal long UpdateRow(MySqlCommand mysqlCommand, string database, string table, IEnumerable<ColumnData> listColData, string where = null, int limit = 0)
         {
+            DiagnosticOutput("UpdateRow", "Database " + database + " table " + table + "data " + string.Join(", ", listColData));
+
             logData.IncreaseQueries(1);
 
             int i = 0;
@@ -105,10 +128,11 @@ namespace MySql.MysqlHelper
             return updateCount;
         }
 
-        public abstract long UpdateRow(string database, string table, IEnumerable<ColumnData> listColData, string where = null, int limit = 0);
-
+        public abstract int SendQuery(string query);
         internal int SendQuery(MySqlCommand mysqlCommand, string query)
         {
+            DiagnosticOutput("SendQuery", query);
+
             logData.IncreaseQueries(1);
 
             mysqlCommand.CommandText = query;
@@ -119,20 +143,22 @@ namespace MySql.MysqlHelper
             return countUpdates;
         }
 
-        public abstract int SendQuery(string query);
-
+        public abstract object GetObject(string query);
         internal object GetObject(MySqlCommand mysqlCommand, string query)
         {
+            DiagnosticOutput("GetObject", query);
+
             logData.IncreaseQueries(1);
 
             mysqlCommand.CommandText = query;
             return mysqlCommand.ExecuteScalar();
         }
 
-        public abstract object GetObject(string query);
-
+        public abstract DataTable GetDataTable(string query);
         internal DataTable GetDataTable(MySqlConnection mysqlConnection, string query)
         {
+            DiagnosticOutput("GetDataTable", query);
+
             logData.IncreaseQueries(1);
 
             using (DataSet ds = new DataSet())
@@ -144,10 +170,11 @@ namespace MySql.MysqlHelper
             }
         }
 
-        public abstract DataTable GetDataTable(string query);
-
+        public abstract void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100);
         internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, DataTable dataTable, int updateBatchSize = 100)
         {
+            DiagnosticOutput("BulkSend", "Database " + database + " table " + table);
+
             logData.IncreaseQueries(1);
 
             Dictionary<string, string> dictIds = new Dictionary<string, string>();
@@ -171,10 +198,11 @@ namespace MySql.MysqlHelper
                 adapter.UpdateBatchSize = updateBatchSize;
                 logData.IncreaseUpdates((ulong)adapter.Update(dataTable));
             }
+
+            mysqlCommand.Parameters.Clear();
         }
 
-        public abstract void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100);
-
+        public abstract void BulkSend(string database, string table, string column, IEnumerable<object> listData);
         internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, string column, IEnumerable<object> listData)
         {
             using (DataTable dataTable = new DataTable())
@@ -185,53 +213,65 @@ namespace MySql.MysqlHelper
             }
         }
 
-        public abstract void BulkSend(string database, string table, string column, IEnumerable<object> listData);
-
-        internal IEnumerable<T> GetFirst<T>(MySqlCommand mysqlCommand, string query)
+        public abstract IEnumerable<T> GetFirst<T>(string query, bool parse = false);
+        internal IEnumerable<T> GetFirst<T>(MySqlCommand mysqlCommand, string query, bool parse = false)
         {
+            DiagnosticOutput("GetFirst <" + typeof(T).ToString() + ">" + (parse ? " PARSE" : ""), query);
+            System.Diagnostics.Debug.WriteLine(query, "(" + id + ") MySQL GetFirst (" + typeof(T) + ") " + (parse ? "PARSE" : ""));
+
             logData.IncreaseQueries(1);
 
             List<T> returnData = new List<T>();
             mysqlCommand.CommandText = query;
             using (MySqlDataReader _datareader = mysqlCommand.ExecuteReader())
             {
-                while (_datareader.Read())
-                    returnData.Add((T)_datareader[0]);
+                if (parse)
+                    while (_datareader.Read()) returnData.Add(ParseObject<T>(_datareader[0]));
+                else
+                    while (_datareader.Read()) returnData.Add((T)_datareader[0]);
             }
-
             return returnData;
         }
 
-        public abstract IEnumerable<T> GetFirst<T>(string query);
-
         internal T ParseObject<T>(object o)
         {
-            if (typeof(T) == typeof(Int32))
-                return (T)Convert.ChangeType(int.Parse(o.ToString()), typeof(T));
+            Type newType = typeof(T);
 
-            if (typeof(T) == typeof(UInt32))
-                return (T)Convert.ChangeType(uint.Parse(o.ToString()), typeof(T));
+            if (newType == typeof(int))
+                return (T)Convert.ChangeType(int.Parse(o.ToString()), newType);
 
-            if (typeof(T) == typeof(long))
-                return (T)Convert.ChangeType(long.Parse(o.ToString()), typeof(T));
+            if (newType == typeof(uint))
+                return (T)Convert.ChangeType(uint.Parse(o.ToString()), newType);
 
-            if (typeof(T) == typeof(ulong))
-                return (T)Convert.ChangeType(ulong.Parse(o.ToString()), typeof(T));
+            if (newType == typeof(long))
+                return (T)Convert.ChangeType(long.Parse(o.ToString()), newType);
 
-            if (typeof(T) == typeof(double))
-                return (T)Convert.ChangeType(double.Parse(o.ToString().Replace(',', '.')), typeof(T), System.Globalization.CultureInfo.InvariantCulture);
+            if (newType == typeof(ulong))
+                return (T)Convert.ChangeType(ulong.Parse(o.ToString()), newType);
 
-            if (typeof(T) == typeof(float))
-                return (T)Convert.ChangeType(float.Parse(o.ToString().Replace(',', '.')), typeof(T), System.Globalization.CultureInfo.InvariantCulture);
+            if (newType == typeof(short))
+                return (T)Convert.ChangeType(short.Parse(o.ToString()), newType);
 
-            if (typeof(T) == typeof(string))
-                return (T)Convert.ChangeType(o.ToString(), typeof(T));
+            if (newType == typeof(ushort))
+                return (T)Convert.ChangeType(ushort.Parse(o.ToString()), newType);
 
-            if (typeof(T) == typeof(bool))
-                return (T)Convert.ChangeType(bool.Parse(o.ToString()), typeof(T));
+            if (newType == typeof(double))
+                return (T)Convert.ChangeType(double.Parse(o.ToString().Replace(',', '.')), newType, System.Globalization.CultureInfo.InvariantCulture);
 
-            if (typeof(T).IsEnum)
-                return (T)Convert.ChangeType(Enum.Parse(typeof(T), o.ToString()), typeof(T));
+            if (newType == typeof(float))
+                return (T)Convert.ChangeType(float.Parse(o.ToString().Replace(',', '.')), newType, System.Globalization.CultureInfo.InvariantCulture);
+
+            if (newType == typeof(byte))
+                return (T)Convert.ChangeType(byte.Parse(o.ToString()), newType);
+
+            if (newType == typeof(string))
+                return (T)Convert.ChangeType(o.ToString(), newType);
+
+            if (newType == typeof(bool))
+                return (T)Convert.ChangeType(bool.Parse(o.ToString()), newType);
+
+            if (newType.IsEnum)
+                return (T)Convert.ChangeType(Enum.Parse(newType, o.ToString()), newType);
 
             throw new Exception("No such type defined for parsing");
         }

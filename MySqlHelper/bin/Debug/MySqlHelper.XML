@@ -4,36 +4,6 @@
         <name>MySqlHelper</name>
     </assembly>
     <members>
-        <member name="M:MySql.MysqlHelper.Default.SetConnectionString(MySql.MysqlHelper.ConnectionString)">
-            <summary>
-            Sets connection string
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.Default.OpenConnection(MySql.Data.MySqlClient.MySqlConnection,System.Int32)">
-            <summary>
-            Opens a connection to the server
-            </summary>
-        </member>
-        <member name="P:MySql.MysqlHelper.Default.connectionString">
-            <summary>
-            Current connectionstring in use
-            </summary>
-        </member>
-        <member name="T:MySql.MysqlHelper.Log">
-            <summary>
-            Log class
-            </summary>
-        </member>
-        <member name="T:MySql.MysqlHelper.ColumnData">
-            <summary>
-            Container class for column name and column data
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.ColumnData.#ctor(System.String,System.Object)">
-            <summary>
-            Constructor
-            </summary>
-        </member>
         <member name="T:MySql.MysqlHelper.ConnectionString">
             <summary>
             Helper for generating connection string
@@ -110,6 +80,42 @@
             </summary>
             <returns>Returns a valid connection string</returns>
         </member>
+        <member name="M:MySql.MysqlHelper.Default.SetConnectionString(MySql.MysqlHelper.ConnectionString)">
+            <summary>
+            Sets connection string
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Default.GetID">
+            <summary>
+            Generates instance ID
+            </summary>
+            <returns>Current Instance ID</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.Default.OpenConnection(MySql.Data.MySqlClient.MySqlConnection,System.Int32)">
+            <summary>
+            Opens a connection to the server
+            </summary>
+        </member>
+        <member name="P:MySql.MysqlHelper.Default.connectionString">
+            <summary>
+            Current connectionstring in use
+            </summary>
+        </member>
+        <member name="T:MySql.MysqlHelper.Log">
+            <summary>
+            Log class
+            </summary>
+        </member>
+        <member name="T:MySql.MysqlHelper.ColumnData">
+            <summary>
+            Container class for column name and column data
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.ColumnData.#ctor(System.String,System.Object)">
+            <summary>
+            Constructor
+            </summary>
+        </member>
         <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTime.HasChanged(System.String,System.String)">
             <summary>
             Returns true if table has been updated since last HasChanged check. First time always returns true
@@ -158,9 +164,10 @@
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetFirst``1(System.String)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetFirst``1(System.String,System.Boolean)">
             <summary>
             Returns a list containing the first column
+            <param name="parse">Parses the object as a string instead of explicit conversion</param>
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetObject(System.String)">
@@ -200,17 +207,12 @@
             Uses only one connection. To be used with transactions and memory tables etc
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.#ctor(MySql.MysqlHelper.ConnectionString,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.#ctor(MySql.MysqlHelper.ConnectionString,System.Boolean,System.Data.IsolationLevel)">
             <summary>
             Constructor
             </summary>
             <param name="options"></param>
             <param name="isTransaction">Should be true when a transaction is to follow. If not, queries will be carried out as made</param>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.Dispose">
-            <summary>
-            Dispose of resources. Should always run after use of OneCon
-            </summary>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.Commit(System.Boolean)">
             <summary>
@@ -278,9 +280,10 @@
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetFirst``1(System.String)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetFirst``1(System.String,System.Boolean)">
             <summary>
             Returns a list containing the first field of each row
+            <param name="parse">Parses the object as a string instead of explicit conversion</param>
             </summary>
         </member>
     </members>

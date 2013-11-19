@@ -12,6 +12,7 @@ namespace MySql.MysqlHelper
     /// </summary>
     public class OneCon : Default, IDisposable
     {
+        private IsolationLevel isolationLevel = IsolationLevel.Unspecified;
         private MySqlConnection mysqlConnection = null;
         private MySqlCommand mysqlCommand = null;
         private MySqlTransaction mysqlTransaction = null;
@@ -23,58 +24,70 @@ namespace MySql.MysqlHelper
         /// </summary>
         /// <param name="options"></param>
         /// <param name="isTransaction">Should be true when a transaction is to follow. If not, queries will be carried out as made</param>
-        public OneCon(ConnectionString options, bool isTransaction = true)
+        public OneCon(ConnectionString options, bool isTransaction = true, IsolationLevel isolationLevel = IsolationLevel.Serializable)
         {
+            this.isolationLevel = isolationLevel;
             this.isTransaction = isTransaction;
             base.SetConnectionString(options);
             mysqlConnection = new MySqlConnection(base.connectionString);
             if (!base.OpenConnection(mysqlConnection, 10)) throw new Exception("Unable to connect");
-            if (isTransaction) mysqlTransaction = mysqlConnection.BeginTransaction();
+            if (isTransaction) mysqlTransaction = mysqlConnection.BeginTransaction(this.isolationLevel);
             mysqlCommand = mysqlConnection.CreateCommand();
             mysqlCommand.Connection = mysqlConnection;
         }
 
-        /// <summary>
-        /// Dispose of resources. Should always run after use of OneCon
-        /// </summary>
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
             {
-                if (mysqlTransaction != null) mysqlTransaction.Dispose();
-                if (mysqlCommand != null) mysqlCommand.Dispose();
-                if (mysqlConnection != null)
-                {
-                    mysqlConnection.Close();
-                    mysqlConnection.Dispose();
-                }
+                if (disposing)
+                    try
+                    {
+                        if (mysqlTransaction != null) mysqlTransaction.Dispose();
+                        if (mysqlCommand != null) mysqlCommand.Dispose();
+                        if (mysqlConnection != null)
+                            mysqlConnection.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        base.DiagnosticOutput("Dispose", ex.ToString());
+                    }
 
                 this.disposed = true;
             }
         }
 
+        ~OneCon()
+        {
+            Dispose(false);
+        }
         /// <summary>
         /// Commits transaction
         /// </summary>
         /// <param name="respring">if a new transaction is to follow, this should be true</param>
         public void Commit(bool respring = false)
         {
+            base.DiagnosticOutput("Commit", "Commiting transaction");
             mysqlTransaction.Commit();
 
             if (respring) // Will make it possible to perform another transaction
             {
-                Dispose();
+                Dispose(true);
+
                 mysqlConnection = new MySqlConnection(base.connectionString);
                 if (!base.OpenConnection(mysqlConnection, 10)) throw new Exception("Unable to connect");
-                mysqlTransaction = mysqlConnection.BeginTransaction();
+                mysqlTransaction = mysqlConnection.BeginTransaction(this.isolationLevel);
                 mysqlCommand = mysqlConnection.CreateCommand();
                 mysqlCommand.Connection = mysqlConnection;
             }
+
+            base.DiagnosticOutput("Commit", "Done");
         }
 
         /// <summary>
@@ -112,7 +125,6 @@ namespace MySql.MysqlHelper
             return base.UpdateRow(this.mysqlCommand, database, table, listColData, where, limit);
         }
 
- 
         /// <summary>
         /// Sends query to server
         /// </summary>
@@ -170,10 +182,11 @@ namespace MySql.MysqlHelper
 
         /// <summary>
         /// Returns a list containing the first field of each row
+        /// <param name="parse">Parses the object as a string instead of explicit conversion</param>
         /// </summary>
-        public override IEnumerable<T> GetFirst<T>(string query)
+        public override IEnumerable<T> GetFirst<T>(string query, bool parse = false)
         {
-            return base.GetFirst<T>(this.mysqlCommand, query);
+            return base.GetFirst<T>(this.mysqlCommand, query, parse);
         }
     }
 }
