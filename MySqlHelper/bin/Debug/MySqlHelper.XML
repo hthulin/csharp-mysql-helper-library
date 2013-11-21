@@ -116,6 +116,21 @@
             Constructor
             </summary>
         </member>
+        <member name="T:MySql.MysqlHelper.InformationSchema.TableUpdateTime">
+            <summary>
+            Table update check class
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTime.#ctor(MySql.MysqlHelper.ConnectionString)">
+            <summary>
+            Constructor for connection string
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTime.#ctor(MySql.MysqlHelper.MultiCon)">
+            <summary>
+            Constructor for connectiong string class
+            </summary>
+        </member>
         <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTime.HasChanged(System.String,System.String)">
             <summary>
             Returns true if table has been updated since last HasChanged check. First time always returns true

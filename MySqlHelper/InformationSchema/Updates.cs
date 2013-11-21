@@ -7,17 +7,26 @@ using MySql.Data.MySqlClient;
 
 namespace MySql.MysqlHelper.InformationSchema
 {
+    /// <summary>
+    /// Table update check class
+    /// </summary>
     public class TableUpdateTime
     {
         private readonly object _lock = new object();
         private Dictionary<Tuple<string, string>, DateTime> dictUpdates = new Dictionary<Tuple<string, string>, DateTime>();
         private MultiCon multiCon = null;
 
+        /// <summary>
+        /// Constructor for connection string
+        /// </summary>
         public TableUpdateTime(ConnectionString connectionString)
         {
             this.multiCon = new MultiCon(connectionString);
         }
 
+        /// <summary>
+        /// Constructor for connectiong string class
+        /// </summary>
         public TableUpdateTime(MultiCon multiCon)
         {
             this.multiCon = multiCon;
