@@ -8,7 +8,7 @@ using MySql.Data.MySqlClient;
 namespace MySql.MysqlHelper
 {
     /// <summary>
-    /// Uses only one connection. To be used with transactions and memory tables etc
+    /// Uses a single connection. To be used with transactions and memory tables etc
     /// </summary>
     public class OneCon : Default, IDisposable
     {
@@ -99,16 +99,16 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
-        /// Inserts a row
+        /// Inserts a row and returns last insertion id
         /// </summary>
         /// <param name="database">Destination database</param>
         /// <param name="table">Destination table</param>
-        /// <param name="listColData">Columns and their data</param>
-        /// <param name="onDupeUpdate">If duplicate, update duplicate with new values</param>
+        /// <param name="colData">Columns and their data</param>
+        /// <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
         /// <returns>Returns last insertion ID</returns>
-        public override long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, bool onDupeUpdate = false)
+        public override long InsertRow(string database, string table, bool onDuplicateUpdate, params ColumnData[] colData)
         {
-            return base.InsertRow(this.mysqlCommand, database, table, listColData, onDupeUpdate);
+            return base.InsertRow(this.mysqlCommand, database, table, onDuplicateUpdate, colData);
         }
 
         /// <summary>
@@ -116,13 +116,13 @@ namespace MySql.MysqlHelper
         /// </summary>
         /// <param name="database">Destination database</param>
         /// <param name="table">Destination table</param>
-        /// <param name="listColData">Columns and their data</param>
+        /// <param name="colData">Columns and their data</param>
         /// <param name="where">Which row(s) to update, null = all</param>
         /// <param name="limit">amount of rows to update. 0 = all</param>
         /// <returns>Returns update count</returns>
-        public override long UpdateRow(string database, string table, IEnumerable<ColumnData> listColData, string where = null, int limit = 0)
+        public override long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData)
         {
-            return base.UpdateRow(this.mysqlCommand, database, table, listColData, where, limit);
+            return base.UpdateRow(this.mysqlCommand, database, table, where, limit, colData);
         }
 
         /// <summary>
@@ -143,17 +143,12 @@ namespace MySql.MysqlHelper
 
         /// Returns a field from the server as specified type using explicit type conversion.
         /// Will throw exception if type is wrong
-        public T GetObject<T>(string query)
+        public T GetObject<T>(string query, bool parse = false)
         {
-            return (T)GetObject(query);
-        }
-
-        /// <summary>
-        /// Parses selected field value, making it less vulnerable for different types (int to uint etc)
-        /// </summary>
-        public T GetObjectParse<T>(string query)
-        {
-            return base.ParseObject<T>(GetObject(query));
+            if (parse)
+                return base.ParseObject<T>(GetObject(query));
+            else
+                return (T)GetObject(query);
         }
 
         /// <summary>
@@ -188,5 +183,7 @@ namespace MySql.MysqlHelper
         {
             return base.GetFirst<T>(this.mysqlCommand, query, parse);
         }
+
+
     }
 }

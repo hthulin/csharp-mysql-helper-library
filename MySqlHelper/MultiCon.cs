@@ -22,18 +22,18 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
-        /// Inserts a row
+        /// Inserts a row and returns last insertion id
         /// </summary>
         /// <param name="database">Destination database</param>
         /// <param name="table">Destination table</param>
-        /// <param name="listColData">Columns and their data</param>
-        /// <param name="onDupeUpdate">If duplicate, update duplicate with new values</param>
+        /// <param name="colData">Columns and their data</param>
+        /// <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
         /// <returns>Returns last insertion ID</returns>
-        public override long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, bool onDupeUpdate = false)
+        public override long InsertRow(string database, string table, bool onDuplicateUpdate, params ColumnData[] colData)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                return base.InsertRow(mysqlCommand, database, table, listColData, onDupeUpdate);
+                return base.InsertRow(mysqlCommand, database, table, onDuplicateUpdate, colData);
         }
 
         /// <summary>
@@ -41,19 +41,19 @@ namespace MySql.MysqlHelper
         /// </summary>
         /// <param name="database">Destination database</param>
         /// <param name="table">Destination table</param>
-        /// <param name="listColData">Columns and their data</param>
         /// <param name="where">Which row(s) to update, null = all</param>
         /// <param name="limit">amount of rows to update. 0 = all</param>
+        /// <param name="colData">Columns and their data</param>
         /// <returns>Returns update count</returns>
-        public override long UpdateRow(string database, string table, IEnumerable<ColumnData> listColData, string where = null, int limit = 0)
+        public override long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                return base.UpdateRow(mysqlCommand, database, table, listColData, where, limit);
+                return base.UpdateRow(mysqlCommand, database, table, where, limit, colData);
         }
 
         /// <summary>
-        /// Sends entire datatable to database. Name of column in datatable should equal name of column in database table
+        /// Sends an entire collection to specified column
         /// </summary>
         public override void BulkSend(string database, string table, string column, IEnumerable<object> listData)
         {
@@ -97,18 +97,12 @@ namespace MySql.MysqlHelper
         /// Returns a field from the server as specified type using explicit type conversion.
         /// Will throw exception if type is wrong
         /// </summary>
-        public T GetObject<T>(string query)
+        public T GetObject<T>(string query, bool parse = false)
         {
-            return (T)GetObject(query);
-        }
-
-        /// <summary>
-        /// Parses selected field value, making it less vulnerable for different types 
-        /// (int -> uint when you know that the value should be above 0 etc)
-        /// </summary>
-        public T GetObjectParse<T>(string query)
-        {
-            return base.ParseObject<T>(GetObject(query));
+            if (parse)
+                return base.ParseObject<T>(GetObject(query));
+            else
+                return (T)GetObject(query);
         }
 
         /// <summary>

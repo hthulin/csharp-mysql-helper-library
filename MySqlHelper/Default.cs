@@ -76,10 +76,11 @@ namespace MySql.MysqlHelper
             return mysqlConnection.State == ConnectionState.Open;
         }
 
-        public abstract long InsertRow(string database, string table, IEnumerable<ColumnData> listColData, bool onDupeUpdate = false);
-        internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, IEnumerable<ColumnData> listColData, bool onDupeUpdate = false)
+        public abstract long InsertRow(string database, string table, bool onDuplicateUpdate, params ColumnData[] listColData);
+        internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, params ColumnData[] listColData)
         {
-            DiagnosticOutput("InsertRow", "Database " + database + " table " + table + "data " + string.Join(", ", listColData));
+            
+            DiagnosticOutput("InsertRow", "Database " + database + " table " + table + "data " + string.Join(", ", listColData.ToList()));
 
             logData.IncreaseQueries(1);
 
@@ -91,7 +92,7 @@ namespace MySql.MysqlHelper
 
             mysqlCommand.Parameters.AddRange(listColData.Select(n => new MySqlParameter("@" + (i++), n.data)).ToArray());
 
-            if (onDupeUpdate)
+            if (onDuplicateUpdate)
             {
                 i = 0;
                 mysqlCommand.CommandText += " ON DUPLICATE KEY UPDATE `" + string.Join(", `", listColData.Select(n => n.columnName + "`=@" + (i++)));
@@ -104,20 +105,20 @@ namespace MySql.MysqlHelper
             return mysqlCommand.LastInsertedId;
         }
 
-        public abstract long UpdateRow(string database, string table, IEnumerable<ColumnData> listColData, string where = null, int limit = 0);
-        internal long UpdateRow(MySqlCommand mysqlCommand, string database, string table, IEnumerable<ColumnData> listColData, string where = null, int limit = 0)
+        public abstract long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData);
+        internal long UpdateRow(MySqlCommand mysqlCommand, string database, string table, string where , int limit, params ColumnData[] colData)
         {
-            DiagnosticOutput("UpdateRow", "Database " + database + " table " + table + "data " + string.Join(", ", listColData));
+            DiagnosticOutput("UpdateRow", "Database " + database + " table " + table + "data " + string.Join(", ", colData.ToList()));
 
             logData.IncreaseQueries(1);
 
             int i = 0;
 
-            mysqlCommand.CommandText = "UPDATE `" + database + "`.`" + table + "` SET `" + string.Join(", `", listColData.Select(n => n.columnName + "`=@" + (i++))) + (string.IsNullOrWhiteSpace(where) ? "" : " WHERE " + where) + (limit == 0 ? "" : " LIMIT " + limit.ToString() + ";");
+            mysqlCommand.CommandText = "UPDATE `" + database + "`.`" + table + "` SET `" + string.Join(", `", colData.Select(n => n.columnName + "`=@" + (i++))) + (string.IsNullOrWhiteSpace(where) ? "" : " WHERE " + where) + (limit == 0 ? "" : " LIMIT " + limit.ToString() + ";");
 
             i = 0;
 
-            mysqlCommand.Parameters.AddRange(listColData.Select(n => new MySqlParameter("@" + (i++), n.data)).ToArray());
+            mysqlCommand.Parameters.AddRange(colData.Select(n => new MySqlParameter("@" + (i++), n.data)).ToArray());
 
             long updateCount = mysqlCommand.ExecuteNonQuery();
 
@@ -217,7 +218,6 @@ namespace MySql.MysqlHelper
         internal IEnumerable<T> GetFirst<T>(MySqlCommand mysqlCommand, string query, bool parse = false)
         {
             DiagnosticOutput("GetFirst <" + typeof(T).ToString() + ">" + (parse ? " PARSE" : ""), query);
-            System.Diagnostics.Debug.WriteLine(query, "(" + id + ") MySQL GetFirst (" + typeof(T) + ") " + (parse ? "PARSE" : ""));
 
             logData.IncreaseQueries(1);
 
@@ -236,7 +236,7 @@ namespace MySql.MysqlHelper
         internal T ParseObject<T>(object o)
         {
             Type newType = typeof(T);
-
+            
             if (newType == typeof(int))
                 return (T)Convert.ChangeType(int.Parse(o.ToString()), newType);
 
