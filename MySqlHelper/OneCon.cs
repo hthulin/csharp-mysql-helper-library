@@ -22,13 +22,32 @@ namespace MySql.MysqlHelper
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="options">Connection string helper instance</param>
+        /// <param name="isolationLevel">Specifies the transaction locking behaviour for the connection</param>
         /// <param name="isTransaction">Should be true when a transaction is to follow. If not, queries will be carried out as made</param>
         public OneCon(ConnectionString options, bool isTransaction = true, IsolationLevel isolationLevel = IsolationLevel.Serializable)
         {
             this.isolationLevel = isolationLevel;
             this.isTransaction = isTransaction;
             base.SetConnectionString(options);
+            mysqlConnection = new MySqlConnection(base.connectionString);
+            if (!base.OpenConnection(mysqlConnection, 10)) throw new Exception("Unable to connect");
+            if (isTransaction) mysqlTransaction = mysqlConnection.BeginTransaction(this.isolationLevel);
+            mysqlCommand = mysqlConnection.CreateCommand();
+            mysqlCommand.Connection = mysqlConnection;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="connectionString">Connection string</param>
+        /// <param name="isTransaction"></param>
+        /// <param name="isolationLevel"></param>
+        public OneCon(string connectionString, bool isTransaction = true, IsolationLevel isolationLevel = IsolationLevel.Serializable)
+        {
+            this.isolationLevel = isolationLevel;
+            this.isTransaction = isTransaction;
+            base.SetConnectionString(connectionString);
             mysqlConnection = new MySqlConnection(base.connectionString);
             if (!base.OpenConnection(mysqlConnection, 10)) throw new Exception("Unable to connect");
             if (isTransaction) mysqlTransaction = mysqlConnection.BeginTransaction(this.isolationLevel);
@@ -116,9 +135,9 @@ namespace MySql.MysqlHelper
         /// </summary>
         /// <param name="database">Destination database</param>
         /// <param name="table">Destination table</param>
-        /// <param name="colData">Columns and their data</param>
         /// <param name="where">Which row(s) to update, null = all</param>
         /// <param name="limit">amount of rows to update. 0 = all</param>
+        /// <param name="colData">Columns and their data</param>
         /// <returns>Returns update count</returns>
         public override long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData)
         {
@@ -160,6 +179,32 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
+        /// Returns rows of selected column
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="query">Select query</param>
+        /// <param name="column">Return column number</param>
+        /// <param name="parse">Parses the object of explicit conversion</param>
+        /// <returns>Selected data</returns>
+        public override IEnumerable<T> GetColumn<T>(string query, int column, bool parse = false)
+        {
+            return base.GetColumn<T>(mysqlConnection, query, column, parse);
+        }
+
+        /// <summary>
+        /// Returns rows of selected column
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="query">Select query</param>
+        /// <param name="column">Return column name</param>
+        /// <param name="parse">Parses the object of explicit conversion</param>
+        /// <returns>Selected data</returns>
+        public override IEnumerable<T> GetColumn<T>(string query, string column, bool parse = false)
+        {
+            return base.GetColumn<T>(mysqlConnection, query, column, parse);
+        }
+
+        /// <summary>
         /// Sends an entire collection to specified column
         /// </summary>
         public override void BulkSend(string database, string table, string column, IEnumerable<object> listData)
@@ -175,15 +220,6 @@ namespace MySql.MysqlHelper
             base.BulkSend(this.mysqlCommand, database, table, dataTable, updateBatchSize);
         }
 
-        /// <summary>
-        /// Returns a list containing the first field of each row
-        /// <param name="parse">Parses the object as a string instead of explicit conversion</param>
-        /// </summary>
-        public override IEnumerable<T> GetFirst<T>(string query, bool parse = false)
-        {
-            return base.GetFirst<T>(this.mysqlCommand, query, parse);
-        }
-
-
+   
     }
 }

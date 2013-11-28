@@ -146,7 +146,13 @@
             <summary>
             Constructor
             </summary>
-            <param name="options"></param>
+            <param name="options">Connection string helper instance</param>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.#ctor(System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="connectionString">Connection string</param>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.InsertRow(System.String,System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
@@ -179,12 +185,6 @@
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetFirst``1(System.String,System.Boolean)">
-            <summary>
-            Returns a list containing the first column
-            <param name="parse">Parses the object as a string instead of explicit conversion</param>
-            </summary>
-        </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetObject(System.String)">
             <summary>
             Returns a field from the server as a object
@@ -206,6 +206,26 @@
             Returns all selected data as a datatable
             </summary>
         </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetColumn``1(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Returns rows of selected column
+            </summary>
+            <typeparam name="T">Return type</typeparam>
+            <param name="query">Select query</param>
+            <param name="column">Return column number</param>
+            <param name="parse">Parses the object of explicit conversion</param>
+            <returns>Selected data</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetColumn``1(System.String,System.String,System.Boolean)">
+            <summary>
+            Returns rows of selected column
+            </summary>
+            <typeparam name="T">Return type</typeparam>
+            <param name="query">Select query</param>
+            <param name="column">Return column name</param>
+            <param name="parse">Parses the object of explicit conversion</param>
+            <returns>Selected data</returns>
+        </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetMysqlConnection">
             <summary>
             Returns the default connecition data
@@ -220,8 +240,17 @@
             <summary>
             Constructor
             </summary>
-            <param name="options"></param>
+            <param name="options">Connection string helper instance</param>
+            <param name="isolationLevel">Specifies the transaction locking behaviour for the connection</param>
             <param name="isTransaction">Should be true when a transaction is to follow. If not, queries will be carried out as made</param>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.#ctor(System.String,System.Boolean,System.Data.IsolationLevel)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="connectionString">Connection string</param>
+            <param name="isTransaction"></param>
+            <param name="isolationLevel"></param>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.Commit(System.Boolean)">
             <summary>
@@ -250,9 +279,9 @@
             </summary>
             <param name="database">Destination database</param>
             <param name="table">Destination table</param>
-            <param name="colData">Columns and their data</param>
             <param name="where">Which row(s) to update, null = all</param>
             <param name="limit">amount of rows to update. 0 = all</param>
+            <param name="colData">Columns and their data</param>
             <returns>Returns update count</returns>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.SendQuery(System.String)">
@@ -274,6 +303,26 @@
             Returns all selected data as a datatable
             </summary>
         </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetColumn``1(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Returns rows of selected column
+            </summary>
+            <typeparam name="T">Return type</typeparam>
+            <param name="query">Select query</param>
+            <param name="column">Return column number</param>
+            <param name="parse">Parses the object of explicit conversion</param>
+            <returns>Selected data</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetColumn``1(System.String,System.String,System.Boolean)">
+            <summary>
+            Returns rows of selected column
+            </summary>
+            <typeparam name="T">Return type</typeparam>
+            <param name="query">Select query</param>
+            <param name="column">Return column name</param>
+            <param name="parse">Parses the object of explicit conversion</param>
+            <returns>Selected data</returns>
+        </member>
         <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object})">
             <summary>
             Sends an entire collection to specified column
@@ -282,12 +331,6 @@
         <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Int32)">
             <summary>
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetFirst``1(System.String,System.Boolean)">
-            <summary>
-            Returns a list containing the first field of each row
-            <param name="parse">Parses the object as a string instead of explicit conversion</param>
             </summary>
         </member>
     </members>

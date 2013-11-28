@@ -29,6 +29,11 @@ namespace MySql.MysqlHelper
             this.connectionString = options.ToString();
         }
 
+        public void SetConnectionString(string connectionString)
+        {
+            this.connectionString = connectionString;
+        }
+
         public ConnectionString GetConnectionOptions()
         {
             return this.connectionStringOptions;
@@ -79,7 +84,6 @@ namespace MySql.MysqlHelper
         public abstract long InsertRow(string database, string table, bool onDuplicateUpdate, params ColumnData[] listColData);
         internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, params ColumnData[] listColData)
         {
-            
             DiagnosticOutput("InsertRow", "Database " + database + " table " + table + "data " + string.Join(", ", listColData.ToList()));
 
             logData.IncreaseQueries(1);
@@ -214,23 +218,29 @@ namespace MySql.MysqlHelper
             }
         }
 
-        public abstract IEnumerable<T> GetFirst<T>(string query, bool parse = false);
-        internal IEnumerable<T> GetFirst<T>(MySqlCommand mysqlCommand, string query, bool parse = false)
+        public abstract IEnumerable<T> GetColumn<T>(string query, string column, bool parse = false);
+        public abstract IEnumerable<T> GetColumn<T>(string query, int column, bool parse = false);
+        internal IEnumerable<T> GetColumn<T>(MySqlConnection mysqlConnection, string query, object column, bool parse = false)
         {
-            DiagnosticOutput("GetFirst <" + typeof(T).ToString() + ">" + (parse ? " PARSE" : ""), query);
+            DiagnosticOutput("GetColumn <" + typeof(T).ToString() + "> (" + column.ToString() + ")" + (parse ? " PARSE" : ""), query);
 
             logData.IncreaseQueries(1);
 
-            List<T> returnData = new List<T>();
-            mysqlCommand.CommandText = query;
-            using (MySqlDataReader _datareader = mysqlCommand.ExecuteReader())
+            if (parse)
             {
-                if (parse)
-                    while (_datareader.Read()) returnData.Add(ParseObject<T>(_datareader[0]));
+                if (column.GetType() == typeof(int))
+                    return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => ParseObject<T>(n[(int)column]));
                 else
-                    while (_datareader.Read()) returnData.Add((T)_datareader[0]);
+                    return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => ParseObject<T>(n[column.ToString()]));
             }
-            return returnData;
+            else
+            {
+                if (column.GetType() == typeof(int))
+                    return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => n[(int)column]).Cast<T>();
+                else
+                    return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => n[column.ToString()]).Cast<T>();
+            }
+
         }
 
         internal T ParseObject<T>(object o)

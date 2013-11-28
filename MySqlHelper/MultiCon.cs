@@ -15,10 +15,19 @@ namespace MySql.MysqlHelper
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="options">Connection string helper instance</param>
         public MultiCon(ConnectionString options)
         {
             base.SetConnectionString(options);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="connectionString">Connection string</param>
+        public MultiCon(string connectionString)
+        {
+            base.SetConnectionString(connectionString);
         }
 
         /// <summary>
@@ -72,17 +81,7 @@ namespace MySql.MysqlHelper
                 base.BulkSend(mysqlCommand, database, table, dataTable, updateBatchSize);
         }
 
-        /// <summary>
-        /// Returns a list containing the first column
-        /// <param name="parse">Parses the object as a string instead of explicit conversion</param>
-        /// </summary>
-        public override IEnumerable<T> GetFirst<T>(string query, bool parse = false)
-        {
-            using (MySqlConnection mysqlConnection = GetMysqlConnection())
-            using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                return base.GetFirst<T>(mysqlCommand, query, parse);
-        }
-
+ 
         /// <summary>
         /// Returns a field from the server as a object
         /// </summary>
@@ -122,6 +121,34 @@ namespace MySql.MysqlHelper
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
                 return base.GetDataTable(mysqlConnection, query);
+        }
+
+        /// <summary>
+        /// Returns rows of selected column
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="query">Select query</param>
+        /// <param name="column">Return column number</param>
+        /// <param name="parse">Parses the object of explicit conversion</param>
+        /// <returns>Selected data</returns>
+        public override IEnumerable<T> GetColumn<T>(string query, int column, bool parse = false)
+        {
+            using (MySqlConnection mysqlConnection = GetMysqlConnection())
+                return base.GetColumn<T>(mysqlConnection, query, column, parse);
+        }
+
+        /// <summary>
+        /// Returns rows of selected column
+        /// </summary>
+        /// <typeparam name="T">Return type</typeparam>
+        /// <param name="query">Select query</param>
+        /// <param name="column">Return column name</param>
+        /// <param name="parse">Parses the object of explicit conversion</param>
+        /// <returns>Selected data</returns>
+        public override IEnumerable<T> GetColumn<T>(string query, string column, bool parse = false)
+        {
+            using (MySqlConnection mysqlConnection = GetMysqlConnection())
+                return base.GetColumn<T>(mysqlConnection, query, column, parse);
         }
 
         /// <summary>
