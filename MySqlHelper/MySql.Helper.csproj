@@ -52,6 +52,7 @@
     <Compile Include="Default.cs" />
     <Compile Include="General.cs" />
     <Compile Include="InformationSchema\Updates.cs" />
+    <Compile Include="Misc\ChecksumCheck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MultiCon.cs" />
     <Compile Include="OneCon.cs" />

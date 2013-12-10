@@ -179,6 +179,25 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
+        /// Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
+        /// </summary>
+        /// <typeparam name="T">Instance type</typeparam>
+        public override IEnumerable<T> GetIEnumerable<T>(string query) 
+        {
+            return base.GetIEnumerable<T>(mysqlConnection, query);
+        }
+
+        /// <summary>
+        /// Returns a idictionary of instances. Instance property name and type must reflect table column name and type
+        /// </summary>
+        /// <typeparam name="Y">Key type</typeparam>
+        /// <typeparam name="T">Instance type</typeparam>
+        public override IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey = false)
+        {
+            return base.GetIDictionary<Y, T>(mysqlConnection, keyColumn, query, parseKey);
+        }
+
+        /// <summary>
         /// Returns rows of selected column
         /// </summary>
         /// <typeparam name="T">Return type</typeparam>

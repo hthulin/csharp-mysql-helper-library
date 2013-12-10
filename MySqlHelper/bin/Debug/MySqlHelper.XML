@@ -82,7 +82,7 @@
         </member>
         <member name="M:MySql.MysqlHelper.Default.SetConnectionString(MySql.MysqlHelper.ConnectionString)">
             <summary>
-            Sets connection string
+            Sets connection string through helper instance
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.Default.GetID">
@@ -206,6 +206,19 @@
             Returns all selected data as a datatable
             </summary>
         </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerable``1(System.String)">
+            <summary>
+            Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetIDictionary``2(System.String,System.String,System.Boolean)">
+            <summary>
+            Returns a idictionary of instances. Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="Y">Key type</typeparam>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetColumn``1(System.String,System.Int32,System.Boolean)">
             <summary>
             Returns rows of selected column
@@ -302,6 +315,19 @@
             <summary>
             Returns all selected data as a datatable
             </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerable``1(System.String)">
+            <summary>
+            Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetIDictionary``2(System.String,System.String,System.Boolean)">
+            <summary>
+            Returns a idictionary of instances. Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="Y">Key type</typeparam>
+            <typeparam name="T">Instance type</typeparam>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetColumn``1(System.String,System.Int32,System.Boolean)">
             <summary>

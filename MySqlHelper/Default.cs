@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using MySql.Data.MySqlClient;
 
 namespace MySql.MysqlHelper
@@ -21,7 +22,7 @@ namespace MySql.MysqlHelper
         public readonly uint id = GetID();
 
         /// <summary>
-        /// Sets connection string
+        /// Sets connection string through helper instance
         /// </summary>
         public void SetConnectionString(ConnectionString options)
         {
@@ -110,7 +111,7 @@ namespace MySql.MysqlHelper
         }
 
         public abstract long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData);
-        internal long UpdateRow(MySqlCommand mysqlCommand, string database, string table, string where , int limit, params ColumnData[] colData)
+        internal long UpdateRow(MySqlCommand mysqlCommand, string database, string table, string where, int limit, params ColumnData[] colData)
         {
             DiagnosticOutput("UpdateRow", "Database " + database + " table " + table + "data " + string.Join(", ", colData.ToList()));
 
@@ -173,6 +174,33 @@ namespace MySql.MysqlHelper
 
                 return ds.Tables[0];
             }
+        }
+
+        private T GetRow<T>(DataRow row, PropertyInfo[] properties) where T : new()
+        {
+            T returnData = new T();
+
+            foreach (PropertyInfo property in properties)
+            {
+                if (!DBNull.Value.Equals(row[property.Name]))
+                    property.SetValue(returnData, row[property.Name], null);
+            }
+
+            return returnData;
+        }
+
+        public abstract IEnumerable<T> GetIEnumerable<T>(string query) where T : new();
+        internal IEnumerable<T> GetIEnumerable<T>(MySqlConnection mysqlConnection, string query) where T : new()
+        {
+            PropertyInfo[] properties = typeof(T).GetProperties();
+            return GetDataTable(mysqlConnection, query).AsEnumerable().Select(row => GetRow<T>(row, properties));
+        }
+
+        public abstract IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey = false) where T : new();
+        internal IDictionary<Y, T> GetIDictionary<Y, T>(MySqlConnection mysqlConnection, string keyColumn, string query, bool parseKey = false)  where T : new()
+        {
+            PropertyInfo[] properties = typeof(T).GetProperties();
+            return GetDataTable(mysqlConnection, query).AsEnumerable().ToDictionary(row => parseKey ? ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties));
         }
 
         public abstract void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100);
@@ -240,13 +268,14 @@ namespace MySql.MysqlHelper
                 else
                     return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => n[column.ToString()]).Cast<T>();
             }
-
         }
+
+
 
         internal T ParseObject<T>(object o)
         {
             Type newType = typeof(T);
-            
+
             if (newType == typeof(int))
                 return (T)Convert.ChangeType(int.Parse(o.ToString()), newType);
 
