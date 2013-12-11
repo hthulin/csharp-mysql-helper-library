@@ -46,6 +46,22 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
+        /// Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
+        /// </summary>
+        /// <param name="database">Destination database</param>
+        /// <param name="table">Destination table</param>
+        /// <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
+        /// <param name="data">Instance where properties and type match database structure</param>
+        /// <returns>Returns last insertion ID</returns>
+        public override long InsertRow<T>(string database, string table, bool onDuplicateUpdate, T data)
+        {
+            using (MySqlConnection mysqlConnection = GetMysqlConnection())
+            using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
+                return base.InsertRow<T>(mysqlCommand, database, table, onDuplicateUpdate, data);
+
+        }
+
+        /// <summary>
         /// Updates a row or rows
         /// </summary>
         /// <param name="database">Destination database</param>

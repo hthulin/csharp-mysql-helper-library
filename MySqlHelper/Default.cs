@@ -110,6 +110,12 @@ namespace MySql.MysqlHelper
             return mysqlCommand.LastInsertedId;
         }
 
+        public abstract long InsertRow<T>(string database, string table, bool onDuplicateUpdate, T data) where T : new();
+        internal long InsertRow<T>(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, T data) where T : new()
+        {
+            return InsertRow(mysqlCommand, database, table, onDuplicateUpdate, typeof(T).GetProperties().Select(n => new ColumnData(n.Name, n.GetValue(data, null))).ToArray());
+        }
+
         public abstract long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData);
         internal long UpdateRow(MySqlCommand mysqlCommand, string database, string table, string where, int limit, params ColumnData[] colData)
         {
@@ -197,7 +203,7 @@ namespace MySql.MysqlHelper
         }
 
         public abstract IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey = false) where T : new();
-        internal IDictionary<Y, T> GetIDictionary<Y, T>(MySqlConnection mysqlConnection, string keyColumn, string query, bool parseKey = false)  where T : new()
+        internal IDictionary<Y, T> GetIDictionary<Y, T>(MySqlConnection mysqlConnection, string keyColumn, string query, bool parseKey = false) where T : new()
         {
             PropertyInfo[] properties = typeof(T).GetProperties();
             return GetDataTable(mysqlConnection, query).AsEnumerable().ToDictionary(row => parseKey ? ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties));

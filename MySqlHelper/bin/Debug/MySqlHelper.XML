@@ -164,6 +164,16 @@
             <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
             <returns>Returns last insertion ID</returns>
         </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.InsertRow``1(System.String,System.String,System.Boolean,``0)">
+            <summary>
+            Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
+            <param name="data">Instance where properties and type match database structure</param>
+            <returns>Returns last insertion ID</returns>
+        </member>
         <member name="M:MySql.MysqlHelper.MultiCon.UpdateRow(System.String,System.String,System.String,System.Int32,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Updates a row or rows
@@ -284,6 +294,16 @@
             <param name="table">Destination table</param>
             <param name="colData">Columns and their data</param>
             <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
+            <returns>Returns last insertion ID</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.InsertRow``1(System.String,System.String,System.Boolean,``0)">
+            <summary>
+            Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
+            <param name="data">Instance where properties and type match database structure</param>
             <returns>Returns last insertion ID</returns>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.UpdateRow(System.String,System.String,System.String,System.Int32,MySql.MysqlHelper.ColumnData[])">
