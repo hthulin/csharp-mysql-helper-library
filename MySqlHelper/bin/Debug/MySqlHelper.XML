@@ -195,41 +195,41 @@
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetObject(System.String)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObject(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a field from the server as a object
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetObject``1(System.String,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObject``1(System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a field from the server as specified type using explicit type conversion.
             Will throw exception if type is wrong
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.SendQuery(System.String)">
+        <member name="M:MySql.MysqlHelper.MultiCon.SendQuery(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Sends query to server
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetDataTable(System.String)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetDataTable(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns all selected data as a datatable
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerable``1(System.String)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
             </summary>
             <typeparam name="T">Instance type</typeparam>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetIDictionary``2(System.String,System.String,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetIDictionary``2(System.String,System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a idictionary of instances. Instance property name and type must reflect table column name and type
             </summary>
             <typeparam name="Y">Key type</typeparam>
             <typeparam name="T">Instance type</typeparam>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetColumn``1(System.String,System.Int32,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetColumn``1(System.String,System.Int32,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns rows of selected column
             </summary>
@@ -237,9 +237,10 @@
             <param name="query">Select query</param>
             <param name="column">Return column number</param>
             <param name="parse">Parses the object of explicit conversion</param>
+            <param name="colData">Parameters</param>
             <returns>Selected data</returns>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetColumn``1(System.String,System.String,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetColumn``1(System.String,System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns rows of selected column
             </summary>
@@ -247,6 +248,7 @@
             <param name="query">Select query</param>
             <param name="column">Return column name</param>
             <param name="parse">Parses the object of explicit conversion</param>
+            <param name="colData">Parameters</param>
             <returns>Selected data</returns>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetMysqlConnection">
@@ -317,12 +319,12 @@
             <param name="colData">Columns and their data</param>
             <returns>Returns update count</returns>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.SendQuery(System.String)">
+        <member name="M:MySql.MysqlHelper.OneCon.SendQuery(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Sends query to server
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetObject(System.String)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetObject(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a field from the server as a object
             </summary>
@@ -331,25 +333,25 @@
             Returns a field from the server as specified type using explicit type conversion.
             Will throw exception if type is wrong
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetDataTable(System.String)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetDataTable(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns all selected data as a datatable
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerable``1(System.String)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
             </summary>
             <typeparam name="T">Instance type</typeparam>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetIDictionary``2(System.String,System.String,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetIDictionary``2(System.String,System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a idictionary of instances. Instance property name and type must reflect table column name and type
             </summary>
             <typeparam name="Y">Key type</typeparam>
             <typeparam name="T">Instance type</typeparam>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetColumn``1(System.String,System.Int32,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetColumn``1(System.String,System.Int32,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns rows of selected column
             </summary>
@@ -357,9 +359,10 @@
             <param name="query">Select query</param>
             <param name="column">Return column number</param>
             <param name="parse">Parses the object of explicit conversion</param>
+            <param name="colData">Parameters</param>
             <returns>Selected data</returns>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetColumn``1(System.String,System.String,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetColumn``1(System.String,System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns rows of selected column
             </summary>
@@ -367,6 +370,7 @@
             <param name="query">Select query</param>
             <param name="column">Return column name</param>
             <param name="parse">Parses the object of explicit conversion</param>
+            <param name="colData">Parameters</param>
             <returns>Selected data</returns>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object})">

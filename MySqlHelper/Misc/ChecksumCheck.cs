@@ -13,7 +13,7 @@ namespace MySql.MysqlHelper.Misc
 
             private long GetChecksum(MultiCon multiCon, string database, string table)
             {
-                return multiCon.GetColumn<long>("CHECKSUM TABLE  `" + database + "`.`" + table + "` EXTENDED", 1).First();
+                return multiCon.GetColumn<long>("CHECKSUM TABLE  `" + database + "`.`" + table + "` EXTENDED", 1, false).First();
             }
 
             public bool HasChanged(MultiCon multiCon, string database, string table, uint checkIntervalSeconds = 0)

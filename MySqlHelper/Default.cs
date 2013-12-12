@@ -8,6 +8,7 @@ using MySql.Data.MySqlClient;
 
 namespace MySql.MysqlHelper
 {
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public abstract class Default
     {
         /// <summary>
@@ -140,43 +141,66 @@ namespace MySql.MysqlHelper
             return updateCount;
         }
 
-        public abstract int SendQuery(string query);
-        internal int SendQuery(MySqlCommand mysqlCommand, string query)
+        public abstract int SendQuery(string query, params ColumnData[] colData);
+        internal int SendQuery(MySqlCommand mysqlCommand, string query, params ColumnData[] colData)
         {
             DiagnosticOutput("SendQuery", query);
 
             logData.IncreaseQueries(1);
 
             mysqlCommand.CommandText = query;
+
+            if (colData != null) mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
+
             int countUpdates = mysqlCommand.ExecuteNonQuery();
 
             logData.IncreaseUpdates((ulong)countUpdates);
 
+            if (colData != null) mysqlCommand.Parameters.Clear();
+
             return countUpdates;
         }
 
-        public abstract object GetObject(string query);
-        internal object GetObject(MySqlCommand mysqlCommand, string query)
+        public abstract object GetObject(string query, params ColumnData[] colData);
+        internal object GetObject(MySqlCommand mysqlCommand, string query, params ColumnData[] colData)
         {
-            DiagnosticOutput("GetObject", query);
+            try
+            {
+                DiagnosticOutput("GetObject", query);
 
-            logData.IncreaseQueries(1);
+                logData.IncreaseQueries(1);
 
-            mysqlCommand.CommandText = query;
-            return mysqlCommand.ExecuteScalar();
+                mysqlCommand.CommandText = query;
+
+                if (colData != null) mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
+
+                return mysqlCommand.ExecuteScalar();
+            }
+            finally
+            {
+                if (colData != null) mysqlCommand.Parameters.Clear();
+            }
         }
 
-        public abstract DataTable GetDataTable(string query);
-        internal DataTable GetDataTable(MySqlConnection mysqlConnection, string query)
+        public abstract DataTable GetDataTable(string query, params ColumnData[] colData);
+        internal DataTable GetDataTable(MySqlCommand mysqlCommand, string query, params ColumnData[] colData)
         {
             DiagnosticOutput("GetDataTable", query);
 
             logData.IncreaseQueries(1);
 
+            mysqlCommand.CommandText = query;
+
+            if (colData != null) mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
+
             using (DataSet ds = new DataSet())
             {
-                using (MySqlDataAdapter _adapter = new MySqlDataAdapter(query, mysqlConnection))
+                using (MySqlDataAdapter _adapter = new MySqlDataAdapter(mysqlCommand))
+                {
                     _adapter.Fill(ds, "map");
+                }
+
+                if (colData != null) mysqlCommand.Parameters.Clear();
 
                 return ds.Tables[0];
             }
@@ -195,18 +219,18 @@ namespace MySql.MysqlHelper
             return returnData;
         }
 
-        public abstract IEnumerable<T> GetIEnumerable<T>(string query) where T : new();
-        internal IEnumerable<T> GetIEnumerable<T>(MySqlConnection mysqlConnection, string query) where T : new()
+        public abstract IEnumerable<T> GetIEnumerable<T>(string query, params ColumnData[] colData) where T : new();
+        internal IEnumerable<T> GetIEnumerable<T>(MySqlCommand mysqlCommand, string query, params ColumnData[] colData) where T : new()
         {
             PropertyInfo[] properties = typeof(T).GetProperties();
-            return GetDataTable(mysqlConnection, query).AsEnumerable().Select(row => GetRow<T>(row, properties));
+            return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(row => GetRow<T>(row, properties));
         }
 
-        public abstract IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey = false) where T : new();
-        internal IDictionary<Y, T> GetIDictionary<Y, T>(MySqlConnection mysqlConnection, string keyColumn, string query, bool parseKey = false) where T : new()
+        public abstract IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey, params ColumnData[] colData) where T : new();
+        internal IDictionary<Y, T> GetIDictionary<Y, T>(MySqlCommand mysqlCommand, string keyColumn, string query, bool parseKey, params ColumnData[] colData) where T : new()
         {
             PropertyInfo[] properties = typeof(T).GetProperties();
-            return GetDataTable(mysqlConnection, query).AsEnumerable().ToDictionary(row => parseKey ? ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties));
+            return GetDataTable(mysqlCommand, query, colData).AsEnumerable().ToDictionary(row => parseKey ? ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties));
         }
 
         public abstract void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100);
@@ -252,9 +276,9 @@ namespace MySql.MysqlHelper
             }
         }
 
-        public abstract IEnumerable<T> GetColumn<T>(string query, string column, bool parse = false);
-        public abstract IEnumerable<T> GetColumn<T>(string query, int column, bool parse = false);
-        internal IEnumerable<T> GetColumn<T>(MySqlConnection mysqlConnection, string query, object column, bool parse = false)
+        public abstract IEnumerable<T> GetColumn<T>(string query, string column, bool parse, params ColumnData[] colData);
+        public abstract IEnumerable<T> GetColumn<T>(string query, int column, bool parse, params ColumnData[] colData);
+        internal IEnumerable<T> GetColumn<T>(MySqlCommand mysqlCommand, string query, object column, bool parse, params ColumnData[] colData)
         {
             DiagnosticOutput("GetColumn <" + typeof(T).ToString() + "> (" + column.ToString() + ")" + (parse ? " PARSE" : ""), query);
 
@@ -263,20 +287,18 @@ namespace MySql.MysqlHelper
             if (parse)
             {
                 if (column.GetType() == typeof(int))
-                    return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => ParseObject<T>(n[(int)column]));
+                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => ParseObject<T>(n[(int)column]));
                 else
-                    return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => ParseObject<T>(n[column.ToString()]));
+                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => ParseObject<T>(n[column.ToString()]));
             }
             else
             {
                 if (column.GetType() == typeof(int))
-                    return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => n[(int)column]).Cast<T>();
+                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => n[(int)column]).Cast<T>();
                 else
-                    return GetDataTable(mysqlConnection, query).AsEnumerable().Select(n => n[column.ToString()]).Cast<T>();
+                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => n[column.ToString()]).Cast<T>();
             }
         }
-
-
 
         internal T ParseObject<T>(object o)
         {

@@ -160,17 +160,17 @@ namespace MySql.MysqlHelper
         /// <summary>
         /// Sends query to server
         /// </summary>
-        public override int SendQuery(string query)
+        public override int SendQuery(string query, params ColumnData[] colData)
         {
-            return base.SendQuery(this.mysqlCommand, query);
+            return base.SendQuery(this.mysqlCommand, query, colData);
         }
 
         /// <summary>
         /// Returns a field from the server as a object
         /// </summary>
-        public override object GetObject(string query)
+        public override object GetObject(string query, params ColumnData[] colData)
         {
-            return base.GetObject(this.mysqlCommand, query);
+            return base.GetObject(this.mysqlCommand, query, colData);
         }
 
         /// Returns a field from the server as specified type using explicit type conversion.
@@ -186,18 +186,18 @@ namespace MySql.MysqlHelper
         /// <summary>
         /// Returns all selected data as a datatable
         /// </summary>
-        public override DataTable GetDataTable(string query)
+        public override DataTable GetDataTable(string query, params ColumnData[] colData)
         {
-            return base.GetDataTable(mysqlConnection, query);
+            return base.GetDataTable(mysqlCommand, query, colData);
         }
 
         /// <summary>
         /// Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
         /// </summary>
         /// <typeparam name="T">Instance type</typeparam>
-        public override IEnumerable<T> GetIEnumerable<T>(string query) 
+        public override IEnumerable<T> GetIEnumerable<T>(string query, params ColumnData[] colData) 
         {
-            return base.GetIEnumerable<T>(mysqlConnection, query);
+            return base.GetIEnumerable<T>(mysqlCommand, query, colData);
         }
 
         /// <summary>
@@ -205,9 +205,9 @@ namespace MySql.MysqlHelper
         /// </summary>
         /// <typeparam name="Y">Key type</typeparam>
         /// <typeparam name="T">Instance type</typeparam>
-        public override IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey = false)
+        public override IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey, params ColumnData[] colData)
         {
-            return base.GetIDictionary<Y, T>(mysqlConnection, keyColumn, query, parseKey);
+            return base.GetIDictionary<Y, T>(mysqlCommand, keyColumn, query, parseKey, colData);
         }
 
         /// <summary>
@@ -217,10 +217,11 @@ namespace MySql.MysqlHelper
         /// <param name="query">Select query</param>
         /// <param name="column">Return column number</param>
         /// <param name="parse">Parses the object of explicit conversion</param>
+        /// <param name="colData">Parameters</param>
         /// <returns>Selected data</returns>
-        public override IEnumerable<T> GetColumn<T>(string query, int column, bool parse = false)
+        public override IEnumerable<T> GetColumn<T>(string query, int column, bool parse, params ColumnData[] colData)
         {
-            return base.GetColumn<T>(mysqlConnection, query, column, parse);
+            return base.GetColumn<T>(mysqlCommand, query, column, parse, colData);
         }
 
         /// <summary>
@@ -230,10 +231,11 @@ namespace MySql.MysqlHelper
         /// <param name="query">Select query</param>
         /// <param name="column">Return column name</param>
         /// <param name="parse">Parses the object of explicit conversion</param>
+        /// <param name="colData">Parameters</param>
         /// <returns>Selected data</returns>
-        public override IEnumerable<T> GetColumn<T>(string query, string column, bool parse = false)
+        public override IEnumerable<T> GetColumn<T>(string query, string column, bool parse, params ColumnData[] colData)
         {
-            return base.GetColumn<T>(mysqlConnection, query, column, parse);
+            return base.GetColumn<T>(mysqlCommand, query, column, parse);
         }
 
         /// <summary>

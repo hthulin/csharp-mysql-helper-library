@@ -96,7 +96,17 @@ namespace MySql.MysqlHelper
 
         public override string ToString()
         {
-            return string.Format("`{0}` = '{1}'", columnName, data);
+            return string.Format("`{0}`='{1}'", columnName, data);
+        }
+
+        public string GetParameterWhereString()
+        {
+            return string.Format("`{0}`=@{0}", columnName);
+        }
+
+        public MySqlParameter GetMysqlParameter()
+        {
+            return new MySqlParameter(columnName, data);
         }
     }
 }
