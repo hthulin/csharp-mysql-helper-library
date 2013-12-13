@@ -53,11 +53,11 @@ namespace MySql.MysqlHelper
         /// <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
         /// <param name="data">Instance where properties and type match database structure</param>
         /// <returns>Returns last insertion ID</returns>
-        public override long InsertRow<T>(string database, string table, bool onDuplicateUpdate, T data)
+        public override long InsertRowGeneric<T>(string database, string table, bool onDuplicateUpdate, T data)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                return base.InsertRow<T>(mysqlCommand, database, table, onDuplicateUpdate, data);
+                return base.InsertRowGeneric<T>(mysqlCommand, database, table, onDuplicateUpdate, data);
 
         }
 

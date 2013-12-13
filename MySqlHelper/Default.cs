@@ -111,8 +111,8 @@ namespace MySql.MysqlHelper
             return mysqlCommand.LastInsertedId;
         }
 
-        public abstract long InsertRow<T>(string database, string table, bool onDuplicateUpdate, T data) where T : new();
-        internal long InsertRow<T>(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, T data) where T : new()
+        public abstract long InsertRowGeneric<T>(string database, string table, bool onDuplicateUpdate, T data) where T : new();
+        internal long InsertRowGeneric<T>(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, T data) where T : new()
         {
             return InsertRow(mysqlCommand, database, table, onDuplicateUpdate, typeof(T).GetProperties().Select(n => new ColumnData(n.Name, n.GetValue(data, null))).ToArray());
         }
@@ -193,17 +193,14 @@ namespace MySql.MysqlHelper
 
             if (colData != null) mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
 
-            using (DataSet ds = new DataSet())
-            {
-                using (MySqlDataAdapter _adapter = new MySqlDataAdapter(mysqlCommand))
-                {
-                    _adapter.Fill(ds, "map");
-                }
+            DataTable dataTable = new DataTable();
 
-                if (colData != null) mysqlCommand.Parameters.Clear();
+            using (MySqlDataAdapter mysqlDataAdapter = new MySqlDataAdapter(mysqlCommand))
+                mysqlDataAdapter.Fill(dataTable);
 
-                return ds.Tables[0];
-            }
+            if (colData != null) mysqlCommand.Parameters.Clear();
+
+            return dataTable;
         }
 
         private T GetRow<T>(DataRow row, PropertyInfo[] properties) where T : new()

@@ -164,7 +164,7 @@
             <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
             <returns>Returns last insertion ID</returns>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.InsertRow``1(System.String,System.String,System.Boolean,``0)">
+        <member name="M:MySql.MysqlHelper.MultiCon.InsertRowGeneric``1(System.String,System.String,System.Boolean,``0)">
             <summary>
             Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
             </summary>
@@ -298,7 +298,7 @@
             <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
             <returns>Returns last insertion ID</returns>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.InsertRow``1(System.String,System.String,System.Boolean,``0)">
+        <member name="M:MySql.MysqlHelper.OneCon.InsertRowGeneric``1(System.String,System.String,System.Boolean,``0)">
             <summary>
             Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
             </summary>
