@@ -83,7 +83,22 @@ namespace MySql.MysqlHelper
     public class ColumnData
     {
         public string columnName { get; set; }
-        public object data { get; set; }
+
+        private object _data = null;
+        public object data
+        {
+            get
+            {
+                if (_data != null && _data.GetType() == typeof(double) && double.IsNaN((double)_data))
+                    return null;
+
+                return _data;
+            }
+            set
+            {
+                _data = value;
+            }
+        }
 
         /// <summary>
         /// Constructor
@@ -96,17 +111,20 @@ namespace MySql.MysqlHelper
 
         public override string ToString()
         {
-            return string.Format("`{0}`='{1}'", columnName, data);
+            return string.Format("{0} : {1}", columnName, data);
         }
 
         public string GetParameterWhereString()
         {
-            return string.Format("`{0}`=@{0}", columnName);
+            if (data == null)
+                return string.Format("`{0}` IS NULL", columnName);
+            else
+                return string.Format("`{0}`=@{0}", columnName);
         }
 
         public MySqlParameter GetMysqlParameter()
         {
-            return new MySqlParameter(columnName, data);
+            return new MySqlParameter("@" + columnName, data);
         }
     }
 }
