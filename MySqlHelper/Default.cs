@@ -230,24 +230,21 @@ namespace MySql.MysqlHelper
             return GetDataTable(mysqlCommand, query, colData).AsEnumerable().ToDictionary(row => parseKey ? ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties));
         }
 
-        public abstract void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100);
-        internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, DataTable dataTable, int updateBatchSize = 100)
+        public abstract void BulkSend(string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100);
+        internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100)
         {
             DiagnosticOutput("BulkSend", "Database " + database + " table " + table);
 
             logData.IncreaseQueries(1);
 
-            Dictionary<string, string> dictIds = new Dictionary<string, string>();
+            IEnumerable<string> columnNames = dataTable.Columns.Cast<DataColumn>().Select(n => n.ColumnName);
 
-            int i = 0;
+            mysqlCommand.Parameters.AddRange(columnNames.Select(n => new MySqlParameter() { ParameterName = "@" + n, SourceColumn = n }).ToArray());
 
-            foreach (DataColumn column in dataTable.Columns)
-            {
-                dictIds.Add(column.ColumnName, "?s" + (i++).ToString());
-                mysqlCommand.Parameters.Add(dictIds[column.ColumnName], MySqlDbType.String).SourceColumn = column.ColumnName;
-            }
+            mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (`" + string.Join("`,`", columnNames) + "`) VALUES (" + string.Join(",", columnNames.Select(n => "@" + n)) + ") ";
 
-            mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (" + string.Join(",", dictIds.Select(n => n.Key)) + ") VALUES (" + string.Join(",", dictIds.Select(n => n.Value)) + ");";
+            if (onDuplicateUpdate) mysqlCommand.CommandText += "ON DUPLICATE KEY UPDATE `" + string.Join(", `", columnNames.Select(n => n + "`=@" + n));
+
             mysqlCommand.CommandType = CommandType.Text;
             mysqlCommand.UpdatedRowSource = UpdateRowSource.None;
 
@@ -256,20 +253,39 @@ namespace MySql.MysqlHelper
                 adapter.ContinueUpdateOnError = true;
                 adapter.InsertCommand = mysqlCommand;
                 adapter.UpdateBatchSize = updateBatchSize;
-                logData.IncreaseUpdates((ulong)adapter.Update(dataTable));
+                long l = adapter.Update(dataTable);
+                logData.IncreaseUpdates((ulong)l);
             }
 
             mysqlCommand.Parameters.Clear();
         }
 
-        public abstract void BulkSend(string database, string table, string column, IEnumerable<object> listData);
-        internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, string column, IEnumerable<object> listData)
+        public abstract void BulkSend(string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate);
+        internal void BulkSend(MySqlCommand mysqlCommand, string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate)
         {
             using (DataTable dataTable = new DataTable())
             {
                 dataTable.Columns.Add(column);
                 listData.All(n => { dataTable.Rows.Add(n); return true; });
-                BulkSend(mysqlCommand, database, table, dataTable);
+                BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate);
+            }
+        }
+
+        public abstract void BulkSendGeneric<T>(string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate);
+        internal void BulkSendGeneric<T>(MySqlCommand mysqlCommand, string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate)
+        {
+            using (DataTable dataTable = new DataTable())
+            {
+                dataTable.Columns.AddRange(typeof(T).GetProperties().Select(n =>
+                    new DataColumn(n.Name, n.GetValue(listData.First(), null).GetType())
+                    ).ToArray());
+
+                foreach (T data in listData)
+                {
+                    dataTable.Rows.Add(data.GetType().GetProperties().Select(n => n.GetValue(data, null)).ToArray());
+                }
+
+                BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate, 1000);
             }
         }
 

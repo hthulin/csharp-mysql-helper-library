@@ -80,23 +80,37 @@ namespace MySql.MysqlHelper
         /// <summary>
         /// Sends an entire collection to specified column
         /// </summary>
-        public override void BulkSend(string database, string table, string column, IEnumerable<object> listData)
+        public override void BulkSend(string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                base.BulkSend(mysqlCommand, database, table, column, listData);
+                base.BulkSend(mysqlCommand, database, table, column, listData, onDuplicateUpdate);
         }
 
         /// <summary>
         /// Sends an entire datatable to specified table. Make sure that column names of table correspond to database
         /// </summary>
-        public override void BulkSend(string database, string table, DataTable dataTable, int updateBatchSize = 100)
+        public override void BulkSend(string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                base.BulkSend(mysqlCommand, database, table, dataTable, updateBatchSize);
+                base.BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate, updateBatchSize);
+
         }
 
+        /// <summary>
+        /// Sends generic IEnumerable to specified table and database. Make sure that the Generic properties and data type correspond
+        /// to database column name and column type
+        /// </summary>
+        /// <param name="database">Destination database</param>
+        /// <param name="table">Destination table</param>
+        /// <param name="listData"></param>
+        public override void BulkSendGeneric<T>(string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate)
+        {
+            using (MySqlConnection mysqlConnection = GetMysqlConnection())
+            using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
+                base.BulkSendGeneric(mysqlCommand, database, table, listData, onDuplicateUpdate);
+        }
 
         /// <summary>
         /// Returns a field from the server as a object
