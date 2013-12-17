@@ -80,21 +80,21 @@ namespace MySql.MysqlHelper
         /// <summary>
         /// Sends an entire collection to specified column
         /// </summary>
-        public override void BulkSend(string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate)
+        public override long BulkSend(string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                base.BulkSend(mysqlCommand, database, table, column, listData, onDuplicateUpdate);
+                return base.BulkSend(mysqlCommand, database, table, column, listData, onDuplicateUpdate);
         }
 
         /// <summary>
         /// Sends an entire datatable to specified table. Make sure that column names of table correspond to database
         /// </summary>
-        public override void BulkSend(string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100)
+        public override long BulkSend(string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                base.BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate, updateBatchSize);
+                return base.BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate, updateBatchSize);
 
         }
 
@@ -105,11 +105,11 @@ namespace MySql.MysqlHelper
         /// <param name="database">Destination database</param>
         /// <param name="table">Destination table</param>
         /// <param name="listData"></param>
-        public override void BulkSendGeneric<T>(string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate)
+        public override long BulkSendGeneric<T>(string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate)
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                base.BulkSendGeneric(mysqlCommand, database, table, listData, onDuplicateUpdate);
+                return base.BulkSendGeneric(mysqlCommand, database, table, listData, onDuplicateUpdate);
         }
 
         /// <summary>
