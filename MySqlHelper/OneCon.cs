@@ -195,7 +195,7 @@ namespace MySql.MysqlHelper
         /// Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
         /// </summary>
         /// <typeparam name="T">Instance type</typeparam>
-        public override IEnumerable<T> GetIEnumerable<T>(string query, params ColumnData[] colData) 
+        public override IEnumerable<T> GetIEnumerable<T>(string query, params ColumnData[] colData)
         {
             return base.GetIEnumerable<T>(mysqlCommand, query, colData);
         }
@@ -265,6 +265,6 @@ namespace MySql.MysqlHelper
         {
             return base.BulkSendGeneric(this.mysqlCommand, database, table, listData, onDuplicateUpdate);
         }
-   
+
     }
 }

@@ -90,19 +90,14 @@ namespace MySql.MysqlHelper
 
             logData.IncreaseQueries(1);
 
-            int i = 0;
-
-            mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (`" + string.Join("`,`", listColData.Select(n => n.columnName)) + "`) VALUES (" + string.Join(",", listColData.Select(n => "@" + (i++))) + ")";
-
-            i = 0;
-
-            mysqlCommand.Parameters.AddRange(listColData.Select(n => new MySqlParameter("@" + (i++), n.data)).ToArray());
+            mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (`" + string.Join("`,`", listColData.Select(n => n.columnName)) + "`) VALUES (" + string.Join(",", listColData.Select(n => "@" + n.columnName)) + ")";
 
             if (onDuplicateUpdate)
             {
-                i = 0;
-                mysqlCommand.CommandText += " ON DUPLICATE KEY UPDATE `" + string.Join(", `", listColData.Select(n => n.columnName + "`=@" + (i++)));
+                mysqlCommand.CommandText += " ON DUPLICATE KEY UPDATE `" + string.Join(", `", listColData.Select(n => n.columnName + "`=@" + n.columnName));
             }
+
+            mysqlCommand.Parameters.AddRange(listColData.Select(n => n.GetMysqlParameter()).ToArray());
 
             logData.IncreaseUpdates((ulong)mysqlCommand.ExecuteNonQuery());
 
@@ -124,13 +119,9 @@ namespace MySql.MysqlHelper
 
             logData.IncreaseQueries(1);
 
-            int i = 0;
+            mysqlCommand.CommandText = "UPDATE `" + database + "`.`" + table + "` SET `" + string.Join(", `", colData.Select(n => n.columnName + "`=@" + n.columnName)) + (string.IsNullOrWhiteSpace(where) ? "" : " WHERE " + where) + (limit == 0 ? "" : " LIMIT " + limit.ToString() + ";");
 
-            mysqlCommand.CommandText = "UPDATE `" + database + "`.`" + table + "` SET `" + string.Join(", `", colData.Select(n => n.columnName + "`=@" + (i++))) + (string.IsNullOrWhiteSpace(where) ? "" : " WHERE " + where) + (limit == 0 ? "" : " LIMIT " + limit.ToString() + ";");
-
-            i = 0;
-
-            mysqlCommand.Parameters.AddRange(colData.Select(n => new MySqlParameter("@" + (i++), n.data)).ToArray());
+            mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
 
             long updateCount = mysqlCommand.ExecuteNonQuery();
 
@@ -235,11 +226,11 @@ namespace MySql.MysqlHelper
         {
             try
             {
-                DiagnosticOutput("BulkSend", "Database " + database + " table " + table);
+                IEnumerable<string> columnNames = dataTable.Columns.Cast<DataColumn>().Select(n => n.ColumnName);
+
+                DiagnosticOutput("BulkSend", string.Format("Database {0} Table {1} Columns {2}", database, table, string.Join(", ", columnNames)));
 
                 logData.IncreaseQueries(1);
-
-                IEnumerable<string> columnNames = dataTable.Columns.Cast<DataColumn>().Select(n => n.ColumnName);
 
                 mysqlCommand.Parameters.AddRange(columnNames.Select(n => new MySqlParameter() { ParameterName = "@" + n, SourceColumn = n }).ToArray());
 
@@ -288,7 +279,10 @@ namespace MySql.MysqlHelper
 
                 foreach (T data in listData)
                 {
-                    dataTable.Rows.Add(data.GetType().GetProperties().Select(n => n.GetValue(data, null)).ToArray());
+                    dataTable.Rows.Add(data.GetType().GetProperties()
+                        .Select(n => 
+                            n.GetValue(data, null) == null ? null : n.GetValue(data, null).GetType() == typeof(double) ? double.IsNaN((double)n.GetValue(data, null)) ? null : n.GetValue(data, null) : n.GetValue(data, null))
+                        .ToArray());
                 }
 
                 return BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate, 1000);
