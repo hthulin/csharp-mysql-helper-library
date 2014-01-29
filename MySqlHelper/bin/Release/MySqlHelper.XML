@@ -131,7 +131,7 @@
             Constructor for connectiong string class
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTime.HasChanged(System.String,System.String)">
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTime.HasChanged(System.String,System.String,System.UInt32)">
             <summary>
             Returns true if table has been updated since last HasChanged check. First time always returns true
             Update time is not available for INNODB
@@ -203,6 +203,7 @@
             <param name="database">Destination database</param>
             <param name="table">Destination table</param>
             <param name="listData"></param>
+            <param name="onDuplicateUpdate"></param>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetObject(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
@@ -400,6 +401,7 @@
             <param name="database">Destination database</param>
             <param name="table">Destination table</param>
             <param name="listData"></param>
+            <param name="onDuplicateUpdate"></param>
         </member>
     </members>
 </doc>

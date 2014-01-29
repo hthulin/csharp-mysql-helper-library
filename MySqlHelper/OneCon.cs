@@ -261,6 +261,7 @@ namespace MySql.MysqlHelper
         /// <param name="database">Destination database</param>
         /// <param name="table">Destination table</param>
         /// <param name="listData"></param>
+        /// <param name="onDuplicateUpdate"></param>
         public override long BulkSendGeneric<T>(string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate)
         {
             return base.BulkSendGeneric(this.mysqlCommand, database, table, listData, onDuplicateUpdate);

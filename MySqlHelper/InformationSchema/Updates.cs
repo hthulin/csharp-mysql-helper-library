@@ -15,6 +15,7 @@ namespace MySql.MysqlHelper.InformationSchema
         private readonly object _lock = new object();
         private Dictionary<Tuple<string, string>, DateTime> dictUpdates = new Dictionary<Tuple<string, string>, DateTime>();
         private MultiCon multiCon = null;
+        private DateTime lastCheck = new DateTime(1970, 1, 1);
 
         /// <summary>
         /// Constructor for connection string
@@ -36,16 +37,25 @@ namespace MySql.MysqlHelper.InformationSchema
         /// Returns true if table has been updated since last HasChanged check. First time always returns true
         /// Update time is not available for INNODB
         /// </summary>
-        public bool HasChanged(string database, string table)
+        public bool HasChanged(string database, string table, uint updateIntervalSeconds = 0)
         {
-            Tuple<string, string> identifier = new Tuple<string, string>(database, table);
-
-            string query = "SELECT `UPDATE_TIME` FROM `information_schema`.`TABLES`  WHERE `TABLE_SCHEMA`='" + database + "' && `TABLE_NAME`='" + table + "' LIMIT 1;";
-
-            DateTime lastModified = multiCon.GetObject<DateTime>(query);
-
             lock (_lock)
             {
+                if (updateIntervalSeconds > 0)
+                    if ((DateTime.Now - lastCheck).TotalSeconds < updateIntervalSeconds)
+                        return false;
+                    else
+                        lastCheck = DateTime.Now;
+
+                Tuple<string, string> identifier = new Tuple<string, string>(database, table);
+
+                string query = "SELECT `UPDATE_TIME` FROM `information_schema`.`TABLES`  WHERE `TABLE_SCHEMA`='" + database + "' && `TABLE_NAME`='" + table + "' LIMIT 1;";
+
+                DateTime lastModified = multiCon.GetObject<DateTime>(query);
+
+
+
+
                 if (!dictUpdates.ContainsKey(identifier))
                     dictUpdates.Add(identifier, lastModified);
                 else

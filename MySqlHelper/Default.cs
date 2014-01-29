@@ -274,7 +274,7 @@ namespace MySql.MysqlHelper
             using (DataTable dataTable = new DataTable())
             {
                 dataTable.Columns.AddRange(typeof(T).GetProperties().Select(n =>
-                    new DataColumn(n.Name, n.GetValue(listData.First(), null).GetType())
+                    new DataColumn(n.Name, typeof(object))
                     ).ToArray());
 
                 foreach (T data in listData)
