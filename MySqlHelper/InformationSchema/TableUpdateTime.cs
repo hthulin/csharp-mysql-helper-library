@@ -13,7 +13,7 @@ namespace MySql.MysqlHelper.InformationSchema
     public class TableUpdateTime
     {
         private readonly object _lock = new object();
-        private Dictionary<Tuple<string, string>, DateTime> dictUpdates = new Dictionary<Tuple<string, string>, DateTime>();
+        private Dictionary<Tuple<string, string, string>, DateTime> dictUpdates = new Dictionary<Tuple<string, string, string>, DateTime>();
         private MultiCon multiCon = null;
         private DateTime lastCheck = new DateTime(1970, 1, 1);
 
@@ -37,7 +37,7 @@ namespace MySql.MysqlHelper.InformationSchema
         /// Returns true if table has been updated since last HasChanged check. First time always returns true
         /// Update time is not available for INNODB
         /// </summary>
-        public bool HasChanged(string database, string table, uint updateIntervalSeconds = 0)
+        public bool HasChanged(string database, string table, uint updateIntervalSeconds = 0, string askerId = null)
         {
             lock (_lock)
             {
@@ -47,15 +47,12 @@ namespace MySql.MysqlHelper.InformationSchema
                     else
                         lastCheck = DateTime.Now;
 
-                Tuple<string, string> identifier = new Tuple<string, string>(database, table);
+                Tuple<string, string, string> identifier = new Tuple<string, string, string>(askerId, database, table);
 
-                string query = "SELECT `UPDATE_TIME` FROM `information_schema`.`TABLES`  WHERE `TABLE_SCHEMA`='" + database + "' && `TABLE_NAME`='" + table + "' LIMIT 1;";
+                string query = "SELECT `UPDATE_TIME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA`=@database && `TABLE_NAME`=@table LIMIT 1;";
 
-                DateTime lastModified = multiCon.GetObject<DateTime>(query);
-
-
-
-
+                DateTime lastModified = multiCon.GetObject<DateTime>(query, false, new ColumnData("database", database), new ColumnData("table", table));
+                
                 if (!dictUpdates.ContainsKey(identifier))
                     dictUpdates.Add(identifier, lastModified);
                 else
@@ -64,7 +61,6 @@ namespace MySql.MysqlHelper.InformationSchema
                     else
                         dictUpdates[identifier] = lastModified;
             }
-
             return true;
         }
     }

@@ -156,6 +156,28 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
+        /// Returns two dimensional object array with data
+        /// </summary>
+        /// <returns>Two dimensional object array</returns>
+        public object[,] GetDataTableAsObjectArray2d(string query, params ColumnData[] colData)
+        {
+            using (MySqlConnection mysqlConnection = GetMysqlConnection())
+            using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
+            {
+                using (DataTable dt = base.GetDataTable(mysqlCommand, query, colData))
+                {
+                    object[,] returnData = new object[dt.Rows.Count, dt.Columns.Count];
+
+                    for (int row = 0; row < dt.Rows.Count; row++)
+                        for (int col = 0; col < dt.Columns.Count; col++)
+                            returnData[row, col] = dt.Rows[row][col];
+
+                    return returnData;
+                }
+            }
+        }
+
+        /// <summary>
         /// Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
         /// </summary>
         /// <typeparam name="T">Instance type</typeparam>

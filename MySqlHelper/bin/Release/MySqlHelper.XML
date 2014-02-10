@@ -4,6 +4,16 @@
         <name>MySqlHelper</name>
     </assembly>
     <members>
+        <member name="T:MySql.MysqlHelper.ColumnData">
+            <summary>
+            Container class for column name and column data
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.ColumnData.#ctor(System.String,System.Object)">
+            <summary>
+            Constructor
+            </summary>
+        </member>
         <member name="T:MySql.MysqlHelper.ConnectionString">
             <summary>
             Helper for generating connection string
@@ -101,21 +111,6 @@
             Current connectionstring in use
             </summary>
         </member>
-        <member name="T:MySql.MysqlHelper.Log">
-            <summary>
-            Log class
-            </summary>
-        </member>
-        <member name="T:MySql.MysqlHelper.ColumnData">
-            <summary>
-            Container class for column name and column data
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.ColumnData.#ctor(System.String,System.Object)">
-            <summary>
-            Constructor
-            </summary>
-        </member>
         <member name="T:MySql.MysqlHelper.InformationSchema.TableUpdateTime">
             <summary>
             Table update check class
@@ -131,10 +126,75 @@
             Constructor for connectiong string class
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTime.HasChanged(System.String,System.String,System.UInt32)">
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTime.HasChanged(System.String,System.String,System.UInt32,System.String)">
             <summary>
             Returns true if table has been updated since last HasChanged check. First time always returns true
             Update time is not available for INNODB
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.#ctor(MySql.MysqlHelper.ConnectionString)">
+            <summary>
+            Constructor for connection string
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.#ctor(MySql.MysqlHelper.MultiCon)">
+            <summary>
+            Constructor for connectiong string class
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.HasChanged(System.String,System.String,System.TimeSpan,System.String)">
+            <summary>
+            Determains if a MyISAM table has been updated. Always returns true on first call.
+            Keeps an cache of the entire update time information for all the tables. 
+            Answer is given in the context of the askerID, so this instance may be shared
+            between multiple tasks
+            </summary>
+            <param name="database"></param>
+            <param name="table"></param>
+            <param name="updateCacheIntervalTimeSpan"></param>
+            <param name="askerId"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:MySql.MysqlHelper.Misc.MySqlTableAttribute" -->
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetUsesProperties(System.Reflection.PropertyInfo[])">
+            <summary>
+            Returns wheter or not any of the properties uses the mysqltable attribute
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetHasProperty(System.Reflection.PropertyInfo)">
+            <summary>
+            Returns wheter or not the property uses the mysqltable attribute
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(System.Reflection.PropertyInfo,System.Reflection.PropertyInfo[])">
+            <summary>
+            If mysqltable attribute is used and the columnname is defined, then this columnname will be returned. if not defined the name of the property will be returned.
+            If neither of the properties use the mysqltable attribute, the name of the property will be returned, else exception will be thrown
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetPropertyShouldRead(System.Reflection.PropertyInfo,System.Reflection.PropertyInfo[])">
+            <summary>
+            True is always returned when neither of the properties use the mysqltable attribute, else returnes whatever the property attribute ReadFromDatabase field is set to. If no attribute, false is returned
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(System.Reflection.PropertyInfo,System.Reflection.PropertyInfo[])">
+            <summary>
+            True is always returned when neither of the properties use the mysqltable attribute, else returnes whatever the property attribute WriteToDatabase field is set to. If no attribute, false is returned
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric``1(System.Data.DataRow,``0)">
+            <summary>
+            Loads data from DataRow into instance
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetObjectReadColumnNames(System.Type)">
+            <summary>
+            Returns the names of all properties to be read from the database
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetObjectWriteColumnNames(System.Type)">
+            <summary>
+            Returns the names of all properties to be written to the database
             </summary>
         </member>
         <member name="T:MySql.MysqlHelper.MultiCon">
@@ -225,6 +285,12 @@
             <summary>
             Returns all selected data as a datatable
             </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetDataTableAsObjectArray2d(System.String,MySql.MysqlHelper.ColumnData[])">
+            <summary>
+            Returns two dimensional object array with data
+            </summary>
+            <returns>Two dimensional object array</returns>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
@@ -347,6 +413,12 @@
             <summary>
             Returns all selected data as a datatable
             </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetDataTableAsObjectArray2d(System.String,MySql.MysqlHelper.ColumnData[])">
+            <summary>
+            Returns two dimensional object array with data
+            </summary>
+            <returns>Two dimensional object array</returns>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>

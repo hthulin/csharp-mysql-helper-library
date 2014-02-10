@@ -48,12 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColumnData.cs" />
     <Compile Include="ConnectionString.cs" />
     <Compile Include="Default.cs" />
-    <Compile Include="General.cs" />
     <Compile Include="InformationSchema\TableInfo.cs" />
-    <Compile Include="InformationSchema\Updates.cs" />
+    <Compile Include="InformationSchema\TableUpdateTime.cs" />
+    <Compile Include="InformationSchema\TableUpdateTimeCacheAll.cs" />
+    <Compile Include="Misc\AttributeData.cs" />
     <Compile Include="Misc\ChecksumCheck.cs" />
+    <Compile Include="Misc\Log.cs" />
     <Compile Include="Misc\Status.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MultiCon.cs" />

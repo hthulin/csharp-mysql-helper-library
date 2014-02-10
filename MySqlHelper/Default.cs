@@ -17,7 +17,7 @@ namespace MySql.MysqlHelper
         public string connectionString { get; set; }
         private ConnectionString connectionStringOptions = null;
 
-        public Log logData = new Log();
+        public Misc.Log logData = new Misc.Log();
         private static readonly object _lock = new object();
         private static uint ids = 0;
         public readonly uint id = GetID();
@@ -86,7 +86,7 @@ namespace MySql.MysqlHelper
         public abstract long InsertRow(string database, string table, bool onDuplicateUpdate, params ColumnData[] listColData);
         internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, params ColumnData[] listColData)
         {
-            DiagnosticOutput("InsertRow", "Database " + database + " table " + table + "data " + string.Join(", ", listColData.ToList()));
+            DiagnosticOutput("InsertRow", "Database " + database + " table " + table + " data " + string.Join(", ", listColData.ToList()));
 
             logData.IncreaseQueries(1);
 
@@ -109,7 +109,7 @@ namespace MySql.MysqlHelper
         public abstract long InsertRowGeneric<T>(string database, string table, bool onDuplicateUpdate, T data) where T : new();
         internal long InsertRowGeneric<T>(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, T data) where T : new()
         {
-            return InsertRow(mysqlCommand, database, table, onDuplicateUpdate, typeof(T).GetProperties().Select(n => new ColumnData(n.Name, n.GetValue(data, null))).ToArray());
+            return InsertRow(mysqlCommand, database, table, onDuplicateUpdate, typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldRead(n, typeof(T).GetProperties())).Select(n => new ColumnData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), n.GetValue(data, null))).ToArray());
         }
 
         public abstract long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData);
@@ -198,12 +198,8 @@ namespace MySql.MysqlHelper
         {
             T returnData = new T();
 
-            foreach (PropertyInfo property in properties)
-            {
-                if (!DBNull.Value.Equals(row[property.Name]))
-                    property.SetValue(returnData, row[property.Name], null);
-            }
-
+            Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric<T>(row, returnData);
+      
             return returnData;
         }
 
@@ -273,14 +269,14 @@ namespace MySql.MysqlHelper
         {
             using (DataTable dataTable = new DataTable())
             {
-                dataTable.Columns.AddRange(typeof(T).GetProperties().Select(n =>
-                    new DataColumn(n.Name, typeof(object))
+                dataTable.Columns.AddRange(typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetType().GetProperties())).Select(n =>
+                    new DataColumn(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), typeof(object))
                     ).ToArray());
 
                 foreach (T data in listData)
                 {
-                    dataTable.Rows.Add(data.GetType().GetProperties()
-                        .Select(n => 
+                    dataTable.Rows.Add(data.GetType().GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetProperties()))
+                        .Select(n =>
                             n.GetValue(data, null) == null ? null : n.GetValue(data, null).GetType() == typeof(double) ? double.IsNaN((double)n.GetValue(data, null)) ? null : n.GetValue(data, null) : n.GetValue(data, null))
                         .ToArray());
                 }
