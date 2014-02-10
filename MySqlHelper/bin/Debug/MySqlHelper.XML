@@ -187,12 +187,12 @@
             Loads data from DataRow into instance
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetObjectReadColumnNames(System.Type)">
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetReadColumnNames(System.Type)">
             <summary>
             Returns the names of all properties to be read from the database
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetObjectWriteColumnNames(System.Type)">
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetWriteColumnNames(System.Type)">
             <summary>
             Returns the names of all properties to be written to the database
             </summary>

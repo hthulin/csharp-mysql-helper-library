@@ -108,7 +108,7 @@ namespace MySql.MysqlHelper.Misc
         /// <summary>
         /// Returns the names of all properties to be read from the database
         /// </summary>
-        public static string[] GetObjectReadColumnNames(Type t)
+        public static string[] GetReadColumnNames(Type t)
         {
             return t.GetProperties().Where(n => GetPropertyShouldRead(n, t.GetProperties())).Select(n => GetPropertyDatabaseColumnName(n, t.GetProperties())).ToArray();
         }
@@ -116,7 +116,7 @@ namespace MySql.MysqlHelper.Misc
         /// <summary>
         /// Returns the names of all properties to be written to the database
         /// </summary>
-        public static string[] GetObjectWriteColumnNames(Type t)
+        public static string[] GetWriteColumnNames(Type t)
         {
             return t.GetProperties().Where(n => GetPropertyShouldWrite(n, t.GetProperties())).Select(n => GetPropertyDatabaseColumnName(n, t.GetProperties())).ToArray();
         }
