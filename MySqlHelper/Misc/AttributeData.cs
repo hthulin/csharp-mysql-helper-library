@@ -10,7 +10,7 @@ namespace MySql.MysqlHelper.Misc
     /// DatabaseColumnName is default null. Then column name will equal property name
     /// </summary>
     [System.AttributeUsage(System.AttributeTargets.Property, AllowMultiple = false)]
-    public class MySqlTableAttribute : Attribute
+    public class MySqlColumnAttribute : Attribute
     {
         public bool WriteToDatabase = true;
         public bool ReadFromDatabase = true;
@@ -19,7 +19,6 @@ namespace MySql.MysqlHelper.Misc
 
     public class MysqlTableAttributeFunctions
     {
-
         /// <summary>
         /// Returns wheter or not any of the properties uses the mysqltable attribute
         /// </summary>
@@ -33,9 +32,8 @@ namespace MySql.MysqlHelper.Misc
         /// </summary>
         public static bool GetHasProperty(System.Reflection.PropertyInfo property)
         {
-            return property.GetCustomAttributes(false) != null && property.GetCustomAttributes(false).Any(n2 => n2.GetType() == typeof(MySqlTableAttribute));
+            return property.GetCustomAttributes(false) != null && property.GetCustomAttributes(false).Any(n2 => n2.GetType() == typeof(MySqlColumnAttribute));
         }
-
 
         /// <summary>
         /// If mysqltable attribute is used and the columnname is defined, then this columnname will be returned. if not defined the name of the property will be returned.
@@ -47,10 +45,10 @@ namespace MySql.MysqlHelper.Misc
             {
                 if (GetHasProperty(property))
                 {
-                    if (string.IsNullOrEmpty(((MySqlTableAttribute)property.GetCustomAttributes(false).First(n => n.GetType() == typeof(MySqlTableAttribute))).DatabaseColumnName))
+                    if (string.IsNullOrEmpty(((MySqlColumnAttribute)property.GetCustomAttributes(false).First(n => n.GetType() == typeof(MySqlColumnAttribute))).DatabaseColumnName))
                         return property.Name;
                     else
-                        return ((MySqlTableAttribute)property.GetCustomAttributes(false).First(n => n.GetType() == typeof(MySqlTableAttribute))).DatabaseColumnName;
+                        return ((MySqlColumnAttribute)property.GetCustomAttributes(false).First(n => n.GetType() == typeof(MySqlColumnAttribute))).DatabaseColumnName;
                 }
                 else
                     throw new Exception("This object uses property attributes but not this property");
@@ -67,7 +65,7 @@ namespace MySql.MysqlHelper.Misc
             if (GetUsesProperties(properties))
             {
                 if (GetHasProperty(property))
-                    return ((MySqlTableAttribute)property.GetCustomAttributes(false).First(n => n.GetType() == typeof(MySqlTableAttribute))).ReadFromDatabase;
+                    return ((MySqlColumnAttribute)property.GetCustomAttributes(false).First(n => n.GetType() == typeof(MySqlColumnAttribute))).ReadFromDatabase;
                 else
                     return false;
             }
@@ -83,7 +81,7 @@ namespace MySql.MysqlHelper.Misc
             if (GetUsesProperties(properties))
             {
                 if (GetHasProperty(property))
-                    return ((MySqlTableAttribute)property.GetCustomAttributes(false).First(n => n.GetType() == typeof(MySqlTableAttribute))).WriteToDatabase;
+                    return ((MySqlColumnAttribute)property.GetCustomAttributes(false).First(n => n.GetType() == typeof(MySqlColumnAttribute))).WriteToDatabase;
                 else
                     return false;
             }

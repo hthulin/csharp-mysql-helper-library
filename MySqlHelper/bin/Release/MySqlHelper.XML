@@ -155,7 +155,7 @@
             <param name="askerId"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:MySql.MysqlHelper.Misc.MySqlTableAttribute" -->
+        <!-- Badly formed XML comment ignored for member "T:MySql.MysqlHelper.Misc.MySqlColumnAttribute" -->
         <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetUsesProperties(System.Reflection.PropertyInfo[])">
             <summary>
             Returns wheter or not any of the properties uses the mysqltable attribute
