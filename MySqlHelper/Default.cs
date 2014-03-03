@@ -109,7 +109,7 @@ namespace MySql.MysqlHelper
         public abstract long InsertRowGeneric<T>(string database, string table, bool onDuplicateUpdate, T data) where T : new();
         internal long InsertRowGeneric<T>(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, T data) where T : new()
         {
-            return InsertRow(mysqlCommand, database, table, onDuplicateUpdate, typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldRead(n, typeof(T).GetProperties())).Select(n => new ColumnData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), n.GetValue(data, null))).ToArray());
+            return InsertRow(mysqlCommand, database, table, onDuplicateUpdate, typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetProperties())).Select(n => new ColumnData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), n.GetValue(data, null))).ToArray());
         }
 
         public abstract long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData);
@@ -199,7 +199,7 @@ namespace MySql.MysqlHelper
             T returnData = new T();
 
             Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric<T>(row, returnData);
-      
+
             return returnData;
         }
 

@@ -55,5 +55,10 @@ namespace MySql.MysqlHelper
         {
             return new MySqlParameter("@" + columnName, data);
         }
+
+        public static IEnumerable<ColumnData> GetGenericWriteMysqlParameters<T>(T data) where T : new()
+        {
+            return typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetProperties())).Select(n => new ColumnData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), n.GetValue(data, null)));
+        }
     }
 }
