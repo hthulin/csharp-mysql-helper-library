@@ -139,20 +139,27 @@
         </member>
         <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.#ctor(MySql.MysqlHelper.MultiCon)">
             <summary>
-            Constructor for connectiong string class
+            Constructor for connection instance
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.HasChanged(System.String,System.String,System.TimeSpan,System.String)">
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.SetMultiCon(MySql.MysqlHelper.MultiCon)">
+            <summary>
+            Sets current connection instance
+            </summary>
+            <param name="multiCon"></param>
+        </member>
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.HasChanged(System.String,System.String,System.TimeSpan,System.String,System.Boolean)">
             <summary>
             Determains if a MyISAM table has been updated. Always returns true on first call.
             Keeps an cache of the entire update time information for all the tables. 
             Answer is given in the context of the askerID, so this instance may be shared
-            between multiple tasks
+            between multiple tasks.
             </summary>
             <param name="database"></param>
             <param name="table"></param>
             <param name="updateCacheIntervalTimeSpan"></param>
             <param name="askerId"></param>
+            <param name="returnFalseIfTableDoesNotExist"></param>
             <returns></returns>
         </member>
         <!-- Badly formed XML comment ignored for member "T:MySql.MysqlHelper.Misc.MySqlColumnAttribute" -->
@@ -182,7 +189,7 @@
             True is always returned when neither of the properties use the mysqltable attribute, else returnes whatever the property attribute WriteToDatabase field is set to. If no attribute, false is returned
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric``1(System.Data.DataRow,``0)">
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric``1(System.Data.DataRow,``0,System.Boolean)">
             <summary>
             Loads data from DataRow into instance
             </summary>
@@ -234,6 +241,16 @@
             <param name="data">Instance where properties and type match database structure</param>
             <returns>Returns last insertion ID</returns>
         </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetRowGeneric``1(System.String,``0,MySql.MysqlHelper.ColumnData[])">
+            <summary>
+            Sets property field in instance based on the returned row from database
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetRowGenericParse``1(System.String,``0,MySql.MysqlHelper.ColumnData[])">
+            <summary>
+            Sets property field in instance based on the returned row from database by parsing content
+            </summary>
+        </member>
         <member name="M:MySql.MysqlHelper.MultiCon.UpdateRow(System.String,System.String,System.String,System.Int32,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Updates a row or rows
@@ -276,6 +293,10 @@
             Will throw exception if type is wrong
             </summary>
         </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObjectParse``1(System.String)">
+            Returns a field from the server as specified type by parsing value as string.
+            Will throw exception if type is wrong
+        </member>
         <member name="M:MySql.MysqlHelper.MultiCon.SendQuery(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Sends query to server
@@ -295,6 +316,12 @@
         <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerableParse``1(System.String,MySql.MysqlHelper.ColumnData[])">
+            <summary>
+            Returns a ienumerable of instances. Instance property name and type must reflect table column name and type. Parses database content
             </summary>
             <typeparam name="T">Instance type</typeparam>
         </member>
@@ -384,6 +411,16 @@
             <param name="data">Instance where properties and type match database structure</param>
             <returns>Returns last insertion ID</returns>
         </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetRowGeneric``1(System.String,``0,MySql.MysqlHelper.ColumnData[])">
+            <summary>
+            Sets property field in instance based on the returned row from database
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetRowGenericParse``1(System.String,``0,MySql.MysqlHelper.ColumnData[])">
+            <summary>
+            Sets property field in instance based on the returned row from database
+            </summary>
+        </member>
         <member name="M:MySql.MysqlHelper.OneCon.UpdateRow(System.String,System.String,System.String,System.Int32,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Updates a row or rows
@@ -409,6 +446,10 @@
             Returns a field from the server as specified type using explicit type conversion.
             Will throw exception if type is wrong
         </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetObjectParse``1(System.String)">
+            Returns a field from the server as specified type by parsing value as string.
+            Will throw exception if type is wrong
+        </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetDataTable(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns all selected data as a datatable
@@ -423,6 +464,12 @@
         <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ColumnData[])">
             <summary>
             Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerableParse``1(System.String,MySql.MysqlHelper.ColumnData[])">
+            <summary>
+            Returns a ienumerable of instances. Instance property name and type must reflect table column name and type. Parses database content
             </summary>
             <typeparam name="T">Instance type</typeparam>
         </member>

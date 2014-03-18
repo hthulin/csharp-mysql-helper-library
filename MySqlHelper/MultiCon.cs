@@ -62,6 +62,26 @@ namespace MySql.MysqlHelper
         }
 
         /// <summary>
+        /// Sets property field in instance based on the returned row from database
+        /// </summary>
+        public override void GetRowGeneric<T>(string query, T t, params ColumnData[] colData)
+        {
+            using (MySqlConnection mysqlConnection = GetMysqlConnection())
+            using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
+                base.GetRowGeneric<T>(mysqlCommand, query, t, false, colData);
+        }
+
+        /// <summary>
+        /// Sets property field in instance based on the returned row from database by parsing content
+        /// </summary>
+        public override void GetRowGenericParse<T>(string query, T t, params ColumnData[] colData)
+        {
+            using (MySqlConnection mysqlConnection = GetMysqlConnection())
+            using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
+                base.GetRowGeneric<T>(mysqlCommand, query, t, true, colData);
+        }
+ 
+        /// <summary>
         /// Updates a row or rows
         /// </summary>
         /// <param name="database">Destination database</param>
@@ -130,9 +150,16 @@ namespace MySql.MysqlHelper
         public T GetObject<T>(string query, bool parse = false, params ColumnData[] colData)
         {
             if (parse)
-                return base.ParseObject<T>(GetObject(query, colData));
+                return Misc.Parsing.ParseObject<T>(GetObject(query, colData));
             else
                 return (T)GetObject(query, colData);
+        }
+
+        /// Returns a field from the server as specified type by parsing value as string.
+        /// Will throw exception if type is wrong
+        public T GetObjectParse<T>(string query)
+        {
+            return GetObject<T>(query, true);
         }
 
         /// <summary>
@@ -185,7 +212,18 @@ namespace MySql.MysqlHelper
         {
             using (MySqlConnection mysqlConnection = GetMysqlConnection())
             using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
-                return base.GetIEnumerable<T>(mysqlCommand, query, colData);
+                return base.GetIEnumerable<T>(mysqlCommand, query, false, colData);
+        }
+
+        /// <summary>
+        /// Returns a ienumerable of instances. Instance property name and type must reflect table column name and type. Parses database content
+        /// </summary>
+        /// <typeparam name="T">Instance type</typeparam>
+        public override IEnumerable<T> GetIEnumerableParse<T>(string query, params ColumnData[] colData)
+        {
+            using (MySqlConnection mysqlConnection = GetMysqlConnection())
+            using (MySqlCommand mysqlCommand = mysqlConnection.CreateCommand())
+                return base.GetIEnumerable<T>(mysqlCommand, query, true, colData);
         }
 
         /// <summary>

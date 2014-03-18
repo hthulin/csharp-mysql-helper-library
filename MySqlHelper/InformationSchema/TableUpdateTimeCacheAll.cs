@@ -27,9 +27,18 @@ namespace MySql.MysqlHelper.InformationSchema
         }
 
         /// <summary>
-        /// Constructor for connectiong string class
+        /// Constructor for connection instance
         /// </summary>
         public TableUpdateTimeCacheAll(MultiCon multiCon)
+        {
+            this.multiCon = multiCon;
+        }
+
+        /// <summary>
+        /// Sets current connection instance
+        /// </summary>
+        /// <param name="multiCon"></param>
+        public void SetMultiCon(MultiCon multiCon)
         {
             this.multiCon = multiCon;
         }
@@ -38,14 +47,15 @@ namespace MySql.MysqlHelper.InformationSchema
         /// Determains if a MyISAM table has been updated. Always returns true on first call.
         /// Keeps an cache of the entire update time information for all the tables. 
         /// Answer is given in the context of the askerID, so this instance may be shared
-        /// between multiple tasks
+        /// between multiple tasks.
         /// </summary>
         /// <param name="database"></param>
         /// <param name="table"></param>
         /// <param name="updateCacheIntervalTimeSpan"></param>
         /// <param name="askerId"></param>
+        /// <param name="returnFalseIfTableDoesNotExist"></param>
         /// <returns></returns>
-        public bool HasChanged(string database, string table, TimeSpan updateCacheIntervalTimeSpan, string askerId = null)
+        public bool HasChanged(string database, string table, TimeSpan updateCacheIntervalTimeSpan, string askerId = null, bool returnFalseIfTableDoesNotExist = true)
         {
             lock (_lock)
             {
@@ -55,6 +65,12 @@ namespace MySql.MysqlHelper.InformationSchema
                     lastUpdateOfCache = DateTime.Now;
                 }
 
+                if (!informationSchemaCache.ContainsKey(new Tuple<string, string>(database, table)))
+                    if (returnFalseIfTableDoesNotExist)
+                        return false;
+                    else
+                        throw new Exception("Table does not exist in Information Schema!");
+                
                 Tuple<string, string, string> identifier = new Tuple<string, string, string>(askerId, database, table);
 
                 DateTime lastModified = informationSchemaCache[new Tuple<string, string>(database, table)];

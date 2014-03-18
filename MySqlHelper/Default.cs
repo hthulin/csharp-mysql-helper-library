@@ -194,29 +194,38 @@ namespace MySql.MysqlHelper
             return dataTable;
         }
 
-        private T GetRow<T>(DataRow row, PropertyInfo[] properties) where T : new()
+        public T GetRow<T>(DataRow row, PropertyInfo[] properties, bool parse) where T : new()
         {
             T returnData = new T();
 
-            Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric<T>(row, returnData);
+            Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric<T>(row, returnData, parse);
 
             return returnData;
         }
 
         public abstract IEnumerable<T> GetIEnumerable<T>(string query, params ColumnData[] colData) where T : new();
-        internal IEnumerable<T> GetIEnumerable<T>(MySqlCommand mysqlCommand, string query, params ColumnData[] colData) where T : new()
+        public abstract IEnumerable<T> GetIEnumerableParse<T>(string query, params ColumnData[] colData) where T : new();
+        internal IEnumerable<T> GetIEnumerable<T>(MySqlCommand mysqlCommand, string query, bool parse, params ColumnData[] colData) where T : new()
         {
             PropertyInfo[] properties = typeof(T).GetProperties();
-            return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(row => GetRow<T>(row, properties));
+            return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(row => GetRow<T>(row, properties, parse));
         }
 
         public abstract IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey, params ColumnData[] colData) where T : new();
         internal IDictionary<Y, T> GetIDictionary<Y, T>(MySqlCommand mysqlCommand, string keyColumn, string query, bool parseKey, params ColumnData[] colData) where T : new()
         {
             PropertyInfo[] properties = typeof(T).GetProperties();
-            return GetDataTable(mysqlCommand, query, colData).AsEnumerable().ToDictionary(row => parseKey ? ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties));
+            return GetDataTable(mysqlCommand, query, colData).AsEnumerable().ToDictionary(row => parseKey ? Misc.Parsing.ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties, false));
         }
 
+        public abstract void GetRowGenericParse<T>(string query, T t, params ColumnData[] colData) where T : new();
+        public abstract void GetRowGeneric<T>(string query, T t, params ColumnData[] colData) where T : new();
+        internal void GetRowGeneric<T>(MySqlCommand mysqlCommand, string query, T t, bool parse, params ColumnData[] colData) where T : new()
+        {
+            using (DataTable dataTable = GetDataTable(mysqlCommand, query, colData))
+                Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric<T>(dataTable.Rows[0], t, parse);
+        }
+    
         public abstract long BulkSend(string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100);
         internal long BulkSend(MySqlCommand mysqlCommand, string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100)
         {
@@ -296,9 +305,9 @@ namespace MySql.MysqlHelper
             if (parse)
             {
                 if (column.GetType() == typeof(int))
-                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => ParseObject<T>(n[(int)column]));
+                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => Misc.Parsing.ParseObject<T>(n[(int)column]));
                 else
-                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => ParseObject<T>(n[column.ToString()]));
+                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => Misc.Parsing.ParseObject<T>(n[column.ToString()]));
             }
             else
             {
@@ -307,49 +316,6 @@ namespace MySql.MysqlHelper
                 else
                     return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => n[column.ToString()]).Cast<T>();
             }
-        }
-
-        internal T ParseObject<T>(object o)
-        {
-            Type newType = typeof(T);
-
-            if (newType == typeof(int))
-                return (T)Convert.ChangeType(int.Parse(o.ToString()), newType);
-
-            if (newType == typeof(uint))
-                return (T)Convert.ChangeType(uint.Parse(o.ToString()), newType);
-
-            if (newType == typeof(long))
-                return (T)Convert.ChangeType(long.Parse(o.ToString()), newType);
-
-            if (newType == typeof(ulong))
-                return (T)Convert.ChangeType(ulong.Parse(o.ToString()), newType);
-
-            if (newType == typeof(short))
-                return (T)Convert.ChangeType(short.Parse(o.ToString()), newType);
-
-            if (newType == typeof(ushort))
-                return (T)Convert.ChangeType(ushort.Parse(o.ToString()), newType);
-
-            if (newType == typeof(double))
-                return (T)Convert.ChangeType(double.Parse(o.ToString().Replace(',', '.')), newType, System.Globalization.CultureInfo.InvariantCulture);
-
-            if (newType == typeof(float))
-                return (T)Convert.ChangeType(float.Parse(o.ToString().Replace(',', '.')), newType, System.Globalization.CultureInfo.InvariantCulture);
-
-            if (newType == typeof(byte))
-                return (T)Convert.ChangeType(byte.Parse(o.ToString()), newType);
-
-            if (newType == typeof(string))
-                return (T)Convert.ChangeType(o.ToString(), newType);
-
-            if (newType == typeof(bool))
-                return (T)Convert.ChangeType(bool.Parse(o.ToString()), newType);
-
-            if (newType.IsEnum)
-                return (T)Convert.ChangeType(Enum.Parse(newType, o.ToString()), newType);
-
-            throw new Exception("No such type defined for parsing");
         }
 
     }

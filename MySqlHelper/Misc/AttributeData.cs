@@ -92,14 +92,14 @@ namespace MySql.MysqlHelper.Misc
         /// <summary>
         /// Loads data from DataRow into instance
         /// </summary>
-        public static void LoadDataRowIntoGeneric<T>(System.Data.DataRow row, T t) where T : new()
+        public static void LoadDataRowIntoGeneric<T>(System.Data.DataRow row, T t, bool parse) where T : new()
         {
             foreach (System.Reflection.PropertyInfo property in t.GetType().GetProperties().Where(n => GetPropertyShouldRead(n, t.GetType().GetProperties())))
             {
                 string columnName = GetPropertyDatabaseColumnName(property, t.GetType().GetProperties());
 
                 if (!DBNull.Value.Equals(row[columnName]))
-                    property.SetValue(t, row[columnName], null);
+                    property.SetValue(t, parse ? Misc.Parsing.ParseObject(property.PropertyType, row[columnName]) : row[columnName], null);
             }
         }
 
