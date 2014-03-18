@@ -191,19 +191,19 @@ namespace MySql.MysqlHelper
 
         /// Returns a field from the server as specified type using explicit type conversion.
         /// Will throw exception if type is wrong
-        public T GetObject<T>(string query, bool parse = false)
+        public T GetObject<T>(string query, bool parse = false, params ColumnData[] colData )
         {
             if (parse)
-                return Misc.Parsing.ParseObject<T>(GetObject(query));
+                return Misc.Parsing.ParseObject<T>(GetObject(query, colData));
             else
-                return (T)GetObject(query);
+                return (T)GetObject(query, colData);
         }
 
         /// Returns a field from the server as specified type by parsing value as string.
         /// Will throw exception if type is wrong
-        public T GetObjectParse<T>(string query)
+        public T GetObjectParse<T>(string query, params ColumnData[] colData)
         {
-            return GetObject<T>(query, true);
+            return GetObject<T>(query, true, colData);
         }
 
         /// <summary>

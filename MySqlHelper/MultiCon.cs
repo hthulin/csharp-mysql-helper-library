@@ -157,9 +157,9 @@ namespace MySql.MysqlHelper
 
         /// Returns a field from the server as specified type by parsing value as string.
         /// Will throw exception if type is wrong
-        public T GetObjectParse<T>(string query)
+        public T GetObjectParse<T>(string query, params ColumnData[] colData)
         {
-            return GetObject<T>(query, true);
+            return GetObject<T>(query, true, colData);
         }
 
         /// <summary>

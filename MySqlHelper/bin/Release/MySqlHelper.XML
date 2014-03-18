@@ -293,7 +293,7 @@
             Will throw exception if type is wrong
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetObjectParse``1(System.String)">
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObjectParse``1(System.String,MySql.MysqlHelper.ColumnData[])">
             Returns a field from the server as specified type by parsing value as string.
             Will throw exception if type is wrong
         </member>
@@ -442,11 +442,11 @@
             Returns a field from the server as a object
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetObject``1(System.String,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetObject``1(System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             Returns a field from the server as specified type using explicit type conversion.
             Will throw exception if type is wrong
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetObjectParse``1(System.String)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetObjectParse``1(System.String,MySql.MysqlHelper.ColumnData[])">
             Returns a field from the server as specified type by parsing value as string.
             Will throw exception if type is wrong
         </member>
