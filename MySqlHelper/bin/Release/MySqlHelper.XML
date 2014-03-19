@@ -267,7 +267,7 @@
             Sends an entire collection to specified column
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Boolean,System.Int32)">
+        <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
@@ -507,7 +507,7 @@
             Sends an entire collection to specified column
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Boolean,System.Int32)">
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>

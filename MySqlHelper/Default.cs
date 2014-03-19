@@ -225,9 +225,9 @@ namespace MySql.MysqlHelper
             using (DataTable dataTable = GetDataTable(mysqlCommand, query, colData))
                 Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric<T>(dataTable.Rows[0], t, parse);
         }
-    
-        public abstract long BulkSend(string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100);
-        internal long BulkSend(MySqlCommand mysqlCommand, string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 100)
+
+        public abstract long BulkSend(string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize = 1000, bool continueUpdateOnError = false);
+        internal long BulkSend(MySqlCommand mysqlCommand, string database, string table, DataTable dataTable, bool onDuplicateUpdate, int updateBatchSize, bool continueUpdateOnError)
         {
             try
             {
@@ -248,7 +248,7 @@ namespace MySql.MysqlHelper
 
                 using (MySqlDataAdapter adapter = new MySqlDataAdapter())
                 {
-                    adapter.ContinueUpdateOnError = true;
+                    adapter.ContinueUpdateOnError = continueUpdateOnError;
                     adapter.InsertCommand = mysqlCommand;
                     adapter.UpdateBatchSize = updateBatchSize;
                     long l = adapter.Update(dataTable);
@@ -262,19 +262,19 @@ namespace MySql.MysqlHelper
             }
         }
 
-        public abstract long BulkSend(string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate);
-        internal long BulkSend(MySqlCommand mysqlCommand, string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate)
+        public abstract long BulkSend(string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate, int updateBatchSize = 1000, bool continueUpdateOnError = false);
+        internal long BulkSend(MySqlCommand mysqlCommand, string database, string table, string column, IEnumerable<object> listData, bool onDuplicateUpdate, int updateBatchSize, bool continueUpdateOnError)
         {
             using (DataTable dataTable = new DataTable())
             {
                 dataTable.Columns.Add(column);
                 listData.All(n => { dataTable.Rows.Add(n); return true; });
-                return BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate);
+                return BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate, updateBatchSize, continueUpdateOnError);
             }
         }
 
-        public abstract long BulkSendGeneric<T>(string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate);
-        internal long BulkSendGeneric<T>(MySqlCommand mysqlCommand, string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate)
+        public abstract long BulkSendGeneric<T>(string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate, int updateBatchSize = 1000, bool continueUpdateOnError = false);
+        internal long BulkSendGeneric<T>(MySqlCommand mysqlCommand, string database, string table, IEnumerable<T> listData, bool onDuplicateUpdate, int updateBatchSize, bool continueUpdateOnError)
         {
             using (DataTable dataTable = new DataTable())
             {
@@ -290,7 +290,7 @@ namespace MySql.MysqlHelper
                         .ToArray());
                 }
 
-                return BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate, 1000);
+                return BulkSend(mysqlCommand, database, table, dataTable,onDuplicateUpdate, updateBatchSize, continueUpdateOnError);
             }
         }
 
