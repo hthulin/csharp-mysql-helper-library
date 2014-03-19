@@ -92,29 +92,32 @@ namespace MySql.MysqlHelper
         /// <param name="respring">if a new transaction is to follow, this should be true</param>
         public void Commit(bool respring = false)
         {
-            base.DiagnosticOutput("Commit", "Commiting transaction");
             mysqlTransaction.Commit();
 
-            if (respring) // Will make it possible to perform another transaction
-            {
-                Dispose(true);
-
-                mysqlConnection = new MySqlConnection(base.connectionString);
-                if (!base.OpenConnection(mysqlConnection, 10)) throw new Exception("Unable to connect");
-                mysqlTransaction = mysqlConnection.BeginTransaction(this.isolationLevel);
-                mysqlCommand = mysqlConnection.CreateCommand();
-                mysqlCommand.Connection = mysqlConnection;
-            }
-
-            base.DiagnosticOutput("Commit", "Done");
+            if (respring)
+                ReinitializeConnection(); // Will make it possible to perform another transaction
         }
 
         /// <summary>
         /// Rolls the transaction back
         /// </summary>
-        public void Rollback()
+        public void Rollback(bool respring = false)
         {
             mysqlTransaction.Rollback();
+
+            if (respring)
+                ReinitializeConnection(); // Will make it possible to perform another transaction
+        }
+
+        private void ReinitializeConnection()
+        {
+            Dispose(true);
+
+            mysqlConnection = new MySqlConnection(base.connectionString);
+            if (!base.OpenConnection(mysqlConnection, 10)) throw new Exception("Unable to connect");
+            mysqlTransaction = mysqlConnection.BeginTransaction(this.isolationLevel);
+            mysqlCommand = mysqlConnection.CreateCommand();
+            mysqlCommand.Connection = mysqlConnection;
         }
 
         /// <summary>

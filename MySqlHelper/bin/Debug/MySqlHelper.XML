@@ -386,7 +386,7 @@
             </summary>
             <param name="respring">if a new transaction is to follow, this should be true</param>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.Rollback">
+        <member name="M:MySql.MysqlHelper.OneCon.Rollback(System.Boolean)">
             <summary>
             Rolls the transaction back
             </summary>

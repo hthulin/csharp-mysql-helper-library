@@ -262,7 +262,7 @@
             <param name="colData">Columns and their data</param>
             <returns>Returns update count</returns>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object},System.Boolean)">
+        <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object},System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Sends an entire collection to specified column
             </summary>
@@ -272,7 +272,7 @@
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.BulkSendGeneric``1(System.String,System.String,System.Collections.Generic.IEnumerable{``0},System.Boolean)">
+        <member name="M:MySql.MysqlHelper.MultiCon.BulkSendGeneric``1(System.String,System.String,System.Collections.Generic.IEnumerable{``0},System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Sends generic IEnumerable to specified table and database. Make sure that the Generic properties and data type correspond
             to database column name and column type
@@ -386,7 +386,7 @@
             </summary>
             <param name="respring">if a new transaction is to follow, this should be true</param>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.Rollback">
+        <member name="M:MySql.MysqlHelper.OneCon.Rollback(System.Boolean)">
             <summary>
             Rolls the transaction back
             </summary>
@@ -502,7 +502,7 @@
             <param name="colData">Parameters</param>
             <returns>Selected data</returns>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object},System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object},System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Sends an entire collection to specified column
             </summary>
@@ -512,7 +512,7 @@
             Sends an entire datatable to specified table. Make sure that column names of table correspond to database
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.BulkSendGeneric``1(System.String,System.String,System.Collections.Generic.IEnumerable{``0},System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSendGeneric``1(System.String,System.String,System.Collections.Generic.IEnumerable{``0},System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Sends generic IEnumerable to specified table and database. Make sure that the Generic properties and data type correspond
             to database column name and column type
