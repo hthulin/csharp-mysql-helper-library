@@ -6,7 +6,7 @@
     <members>
         <member name="T:MySql.MysqlHelper.ColumnData">
             <summary>
-            Container class for column name and column data
+            Container class for column name and column data. Also used for parameter data
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.ColumnData.#ctor(System.String,System.Object)">
@@ -289,12 +289,12 @@
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetObject``1(System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
             <summary>
-            Returns a field from the server as specified type using explicit type conversion.
+            Returns a field from the server as specified type using explicit type conversion
             Will throw exception if type is wrong
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetObjectParse``1(System.String,MySql.MysqlHelper.ColumnData[])">
-            Returns a field from the server as specified type by parsing value as string.
+            Returns a field from the server as specified type by parsing value as string
             Will throw exception if type is wrong
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.SendQuery(System.String,MySql.MysqlHelper.ColumnData[])">
@@ -443,11 +443,11 @@
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetObject``1(System.String,System.Boolean,MySql.MysqlHelper.ColumnData[])">
-            Returns a field from the server as specified type using explicit type conversion.
+            Returns a field from the server as specified type using explicit type conversion
             Will throw exception if type is wrong
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetObjectParse``1(System.String,MySql.MysqlHelper.ColumnData[])">
-            Returns a field from the server as specified type by parsing value as string.
+            Returns a field from the server as specified type by parsing value as string
             Will throw exception if type is wrong
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetDataTable(System.String,MySql.MysqlHelper.ColumnData[])">

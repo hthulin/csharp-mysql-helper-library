@@ -278,7 +278,7 @@ namespace MySql.MysqlHelper
         {
             using (DataTable dataTable = new DataTable())
             {
-                dataTable.Columns.AddRange(typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetType().GetProperties())).Select(n =>
+                dataTable.Columns.AddRange(typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetProperties())).Select(n =>
                     new DataColumn(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), typeof(object))
                     ).ToArray());
 

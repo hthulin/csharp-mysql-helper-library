@@ -7,7 +7,7 @@ using System.Text;
 namespace MySql.MysqlHelper
 {
     /// <summary>
-    /// Container class for column name and column data
+    /// Container class for column name and column data. Also used for parameter data
     /// </summary>
     public class ColumnData
     {

@@ -191,7 +191,7 @@ namespace MySql.MysqlHelper
 
         /// Returns a field from the server as specified type using explicit type conversion
         /// Will throw exception if type is wrong
-        public T GetObject<T>(string query, bool parse = false, params ColumnData[] colData )
+        public T GetObject<T>(string query, bool parse = false, params ColumnData[] colData)
         {
             if (parse)
                 return Misc.Parsing.ParseObject<T>(GetObject(query, colData));
@@ -247,7 +247,7 @@ namespace MySql.MysqlHelper
         /// <typeparam name="T">Instance type</typeparam>
         public override IEnumerable<T> GetIEnumerableParse<T>(string query, params ColumnData[] colData)
         {
-                return base.GetIEnumerable<T>(mysqlCommand, query, true, colData);
+            return base.GetIEnumerable<T>(mysqlCommand, query, true, colData);
         }
 
         /// <summary>
