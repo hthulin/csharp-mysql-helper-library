@@ -51,7 +51,7 @@ namespace MySql.MysqlHelper.InformationSchema
 
                 string query = "SELECT `UPDATE_TIME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA`=@database && `TABLE_NAME`=@table LIMIT 1;";
 
-                DateTime lastModified = multiCon.GetObject<DateTime>(query, false, new ColumnData("database", database), new ColumnData("table", table));
+                DateTime lastModified = multiCon.GetObject<DateTime>(query, false, new ParameterData("database", database), new ParameterData("table", table));
                 
                 if (!dictUpdates.ContainsKey(identifier))
                     dictUpdates.Add(identifier, lastModified);

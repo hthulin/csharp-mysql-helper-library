@@ -9,22 +9,23 @@ namespace MySql.MysqlHelper.Misc
     {
         private double differenceSeconds = double.NaN;
 
-        public DateTime GetServerDateTime(MySql.MysqlHelper.MultiCon connection)
-        {
-            return GetServerDateTime<MySql.MysqlHelper.MultiCon>(connection);
-        }
+        private XCon xCon = null;
 
-        public DateTime GetServerDateTime(MySql.MysqlHelper.OneCon connection)
-        {
-            return GetServerDateTime<MySql.MysqlHelper.OneCon>(connection);
-        }
-
-        private DateTime GetServerDateTime<T>(T connection) where T : Default
+        /// <summary>
+        /// Returns server timestamp. Only needs to query the database once.
+        /// </summary>
+        /// <returns></returns>
+        public DateTime GetServerDateTime()
         {
             if (double.IsNaN(differenceSeconds))
-                differenceSeconds = ((DateTime)connection.GetObject("SELECT CURRENT_TIMESTAMP") - DateTime.Now).TotalSeconds;
+                differenceSeconds = ((DateTime)xCon.GetObject("SELECT CURRENT_TIMESTAMP") - DateTime.Now).TotalSeconds;
 
             return DateTime.Now.AddSeconds(differenceSeconds);
+        }
+
+        public Status(XCon xCon)
+        {
+            this.xCon = xCon;
         }
     }
 }

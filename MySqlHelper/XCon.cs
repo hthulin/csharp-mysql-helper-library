@@ -9,7 +9,7 @@ using MySql.Data.MySqlClient;
 namespace MySql.MysqlHelper
 {
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    public abstract class Default
+    public abstract class XCon
     {
         /// <summary>
         /// Current connectionstring in use
@@ -56,9 +56,9 @@ namespace MySql.MysqlHelper
                 return ids++;
         }
 
-        public void DiagnosticOutput(string method, string text)
+        public void DebugOutput(string method, string text)
         {
-            System.Diagnostics.Debug.WriteLine(string.Format("({0}) MySQL {1} : {2}", this.id, method, text));
+            System.Diagnostics.Debug.WriteLine(text, string.Format("MySQL ({0}) {1}", this.id, method));
         }
 
         /// <summary>
@@ -76,28 +76,28 @@ namespace MySql.MysqlHelper
                 catch (MySqlException)
                 {
                     if (i == attempts - 1) throw;
-                    System.Diagnostics.Debug.WriteLine("Exception. Trying to connect again", "(" + id + ") MySQL");
+                    DebugOutput("OpenConnection", "Exception. Trying to connect again");
                     System.Threading.Thread.Sleep(50);
                 }
             }
             return mysqlConnection.State == ConnectionState.Open;
         }
 
-        public abstract long InsertRow(string database, string table, bool onDuplicateUpdate, params ColumnData[] listColData);
-        internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, params ColumnData[] listColData)
+        public abstract long InsertRow(string database, string table, bool onDuplicateUpdate, params ParameterData[] parameterData);
+        internal long InsertRow(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, params ParameterData[] parameterData)
         {
-            DiagnosticOutput("InsertRow", "Database " + database + " table " + table + " data " + string.Join(", ", listColData.ToList()));
+            DebugOutput("InsertRow", "Database " + database + " table " + table + " data " + string.Join(", ", parameterData.ToList()));
 
             logData.IncreaseQueries(1);
 
-            mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (`" + string.Join("`,`", listColData.Select(n => n.columnName)) + "`) VALUES (" + string.Join(",", listColData.Select(n => "@" + n.columnName)) + ")";
+            mysqlCommand.CommandText = "INSERT INTO `" + database + "`.`" + table + "` (`" + string.Join("`,`", parameterData.Select(n => n.parameterName)) + "`) VALUES (" + string.Join(",", parameterData.Select(n => "@" + n.parameterName)) + ")";
 
             if (onDuplicateUpdate)
             {
-                mysqlCommand.CommandText += " ON DUPLICATE KEY UPDATE `" + string.Join(", `", listColData.Select(n => n.columnName + "`=@" + n.columnName));
+                mysqlCommand.CommandText += " ON DUPLICATE KEY UPDATE `" + string.Join(", `", parameterData.Select(n => n.parameterName + "`=@" + n.parameterName));
             }
 
-            mysqlCommand.Parameters.AddRange(listColData.Select(n => n.GetMysqlParameter()).ToArray());
+            mysqlCommand.Parameters.AddRange(parameterData.Select(n => n.GetMysqlParameter()).ToArray());
 
             logData.IncreaseUpdates((ulong)mysqlCommand.ExecuteNonQuery());
 
@@ -109,19 +109,19 @@ namespace MySql.MysqlHelper
         public abstract long InsertRowGeneric<T>(string database, string table, bool onDuplicateUpdate, T data) where T : new();
         internal long InsertRowGeneric<T>(MySqlCommand mysqlCommand, string database, string table, bool onDuplicateUpdate, T data) where T : new()
         {
-            return InsertRow(mysqlCommand, database, table, onDuplicateUpdate, typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetProperties())).Select(n => new ColumnData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), n.GetValue(data, null))).ToArray());
+            return InsertRow(mysqlCommand, database, table, onDuplicateUpdate, typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetProperties())).Select(n => new ParameterData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), n.GetValue(data, null))).ToArray());
         }
 
-        public abstract long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData);
-        internal long UpdateRow(MySqlCommand mysqlCommand, string database, string table, string where, int limit, params ColumnData[] colData)
+        public abstract long UpdateRow(string database, string table, string where, int limit, params ParameterData[] parameterData);
+        internal long UpdateRow(MySqlCommand mysqlCommand, string database, string table, string where, int limit, params ParameterData[] parameterData)
         {
-            DiagnosticOutput("UpdateRow", "Database " + database + " table " + table + "data " + string.Join(", ", colData.ToList()));
+            DebugOutput("UpdateRow", "Database " + database + " table " + table + "data " + string.Join(", ", parameterData.ToList()));
 
             logData.IncreaseQueries(1);
 
-            mysqlCommand.CommandText = "UPDATE `" + database + "`.`" + table + "` SET `" + string.Join(", `", colData.Select(n => n.columnName + "`=@" + n.columnName)) + (string.IsNullOrWhiteSpace(where) ? "" : " WHERE " + where) + (limit == 0 ? "" : " LIMIT " + limit.ToString() + ";");
+            mysqlCommand.CommandText = "UPDATE `" + database + "`.`" + table + "` SET `" + string.Join(", `", parameterData.Select(n => n.parameterName + "`=@" + n.parameterName)) + (string.IsNullOrWhiteSpace(where) ? "" : " WHERE " + where) + (limit == 0 ? "" : " LIMIT " + limit.ToString() + ";");
 
-            mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
+            mysqlCommand.Parameters.AddRange(parameterData.Select(n => n.GetMysqlParameter()).ToArray());
 
             long updateCount = mysqlCommand.ExecuteNonQuery();
 
@@ -132,64 +132,64 @@ namespace MySql.MysqlHelper
             return updateCount;
         }
 
-        public abstract int SendQuery(string query, params ColumnData[] colData);
-        internal int SendQuery(MySqlCommand mysqlCommand, string query, params ColumnData[] colData)
+        public abstract int SendQuery(string query, params ParameterData[] parameterData);
+        internal int SendQuery(MySqlCommand mysqlCommand, string query, params ParameterData[] parameterData)
         {
-            DiagnosticOutput("SendQuery", query);
+            DebugOutput("SendQuery", query);
 
             logData.IncreaseQueries(1);
 
             mysqlCommand.CommandText = query;
 
-            if (colData != null) mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
+            if (parameterData != null) mysqlCommand.Parameters.AddRange(parameterData.Select(n => n.GetMysqlParameter()).ToArray());
 
             int countUpdates = mysqlCommand.ExecuteNonQuery();
 
             logData.IncreaseUpdates((ulong)countUpdates);
 
-            if (colData != null) mysqlCommand.Parameters.Clear();
+            if (parameterData != null) mysqlCommand.Parameters.Clear();
 
             return countUpdates;
         }
 
-        public abstract object GetObject(string query, params ColumnData[] colData);
-        internal object GetObject(MySqlCommand mysqlCommand, string query, params ColumnData[] colData)
+        public abstract object GetObject(string query, params ParameterData[] parameterData);
+        internal object GetObject(MySqlCommand mysqlCommand, string query, params ParameterData[] parameterData)
         {
             try
             {
-                DiagnosticOutput("GetObject", query);
+                DebugOutput("GetObject", query);
 
                 logData.IncreaseQueries(1);
 
                 mysqlCommand.CommandText = query;
 
-                if (colData != null) mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
+                if (parameterData != null) mysqlCommand.Parameters.AddRange(parameterData.Select(n => n.GetMysqlParameter()).ToArray());
 
                 return mysqlCommand.ExecuteScalar();
             }
             finally
             {
-                if (colData != null) mysqlCommand.Parameters.Clear();
+                if (parameterData != null) mysqlCommand.Parameters.Clear();
             }
         }
 
-        public abstract DataTable GetDataTable(string query, params ColumnData[] colData);
-        internal DataTable GetDataTable(MySqlCommand mysqlCommand, string query, params ColumnData[] colData)
+        public abstract DataTable GetDataTable(string query, params ParameterData[] parameterData);
+        internal DataTable GetDataTable(MySqlCommand mysqlCommand, string query, params ParameterData[] parameterData)
         {
-            DiagnosticOutput("GetDataTable", query);
+            DebugOutput("GetDataTable", query);
 
             logData.IncreaseQueries(1);
 
             mysqlCommand.CommandText = query;
 
-            if (colData != null) mysqlCommand.Parameters.AddRange(colData.Select(n => n.GetMysqlParameter()).ToArray());
+            if (parameterData != null && parameterData.Count() > 0 && parameterData[0] != null) mysqlCommand.Parameters.AddRange(parameterData.Select(n => n.GetMysqlParameter()).ToArray());
 
             DataTable dataTable = new DataTable();
 
             using (MySqlDataAdapter mysqlDataAdapter = new MySqlDataAdapter(mysqlCommand))
                 mysqlDataAdapter.Fill(dataTable);
 
-            if (colData != null) mysqlCommand.Parameters.Clear();
+            if (parameterData != null) mysqlCommand.Parameters.Clear();
 
             return dataTable;
         }
@@ -203,26 +203,26 @@ namespace MySql.MysqlHelper
             return returnData;
         }
 
-        public abstract IEnumerable<T> GetIEnumerable<T>(string query, params ColumnData[] colData) where T : new();
-        public abstract IEnumerable<T> GetIEnumerableParse<T>(string query, params ColumnData[] colData) where T : new();
-        internal IEnumerable<T> GetIEnumerable<T>(MySqlCommand mysqlCommand, string query, bool parse, params ColumnData[] colData) where T : new()
+        public abstract IEnumerable<T> GetIEnumerable<T>(string query, params ParameterData[] parameterData) where T : new();
+        public abstract IEnumerable<T> GetIEnumerableParse<T>(string query, params ParameterData[] parameterData) where T : new();
+        internal IEnumerable<T> GetIEnumerable<T>(MySqlCommand mysqlCommand, string query, bool parse, params ParameterData[] parameterData) where T : new()
         {
             PropertyInfo[] properties = typeof(T).GetProperties();
-            return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(row => GetRow<T>(row, properties, parse));
+            return GetDataTable(mysqlCommand, query, parameterData).AsEnumerable().Select(row => GetRow<T>(row, properties, parse));
         }
 
-        public abstract IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey, params ColumnData[] colData) where T : new();
-        internal IDictionary<Y, T> GetIDictionary<Y, T>(MySqlCommand mysqlCommand, string keyColumn, string query, bool parseKey, params ColumnData[] colData) where T : new()
+        public abstract IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey, params ParameterData[] parameterData) where T : new();
+        internal IDictionary<Y, T> GetIDictionary<Y, T>(MySqlCommand mysqlCommand, string keyColumn, string query, bool parseKey, params ParameterData[] parameterData) where T : new()
         {
             PropertyInfo[] properties = typeof(T).GetProperties();
-            return GetDataTable(mysqlCommand, query, colData).AsEnumerable().ToDictionary(row => parseKey ? Misc.Parsing.ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties, false));
+            return GetDataTable(mysqlCommand, query, parameterData).AsEnumerable().ToDictionary(row => parseKey ? Misc.Parsing.ParseObject<Y>(row[keyColumn]) : (Y)row[keyColumn], row => GetRow<T>(row, properties, false));
         }
 
-        public abstract void GetRowGenericParse<T>(string query, T t, params ColumnData[] colData) where T : new();
-        public abstract void GetRowGeneric<T>(string query, T t, params ColumnData[] colData) where T : new();
-        internal void GetRowGeneric<T>(MySqlCommand mysqlCommand, string query, T t, bool parse, params ColumnData[] colData) where T : new()
+        public abstract void GetRowGenericParse<T>(string query, T t, params ParameterData[] parameterData) where T : new();
+        public abstract void GetRowGeneric<T>(string query, T t, params ParameterData[] parameterData) where T : new();
+        internal void GetRowGeneric<T>(MySqlCommand mysqlCommand, string query, T t, bool parse, params ParameterData[] parameterData) where T : new()
         {
-            using (DataTable dataTable = GetDataTable(mysqlCommand, query, colData))
+            using (DataTable dataTable = GetDataTable(mysqlCommand, query, parameterData))
                 Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric<T>(dataTable.Rows[0], t, parse);
         }
 
@@ -233,7 +233,7 @@ namespace MySql.MysqlHelper
             {
                 IEnumerable<string> columnNames = dataTable.Columns.Cast<DataColumn>().Select(n => n.ColumnName);
 
-                DiagnosticOutput("BulkSend", string.Format("Database {0} Table {1} Columns {2}", database, table, string.Join(", ", columnNames)));
+                DebugOutput("BulkSend", string.Format("Database {0} Table {1} Columns {2}", database, table, string.Join(", ", columnNames)));
 
                 logData.IncreaseQueries(1);
 
@@ -290,31 +290,31 @@ namespace MySql.MysqlHelper
                         .ToArray());
                 }
 
-                return BulkSend(mysqlCommand, database, table, dataTable,onDuplicateUpdate, updateBatchSize, continueUpdateOnError);
+                return BulkSend(mysqlCommand, database, table, dataTable, onDuplicateUpdate, updateBatchSize, continueUpdateOnError);
             }
         }
 
-        public abstract IEnumerable<T> GetColumn<T>(string query, string column, bool parse, params ColumnData[] colData);
-        public abstract IEnumerable<T> GetColumn<T>(string query, int column, bool parse, params ColumnData[] colData);
-        internal IEnumerable<T> GetColumn<T>(MySqlCommand mysqlCommand, string query, object column, bool parse, params ColumnData[] colData)
+        public abstract IEnumerable<T> GetColumn<T>(string query, string column, bool parse, params ParameterData[] parameterData);
+        public abstract IEnumerable<T> GetColumn<T>(string query, int column, bool parse, params ParameterData[] parameterData);
+        internal IEnumerable<T> GetColumn<T>(MySqlCommand mysqlCommand, string query, object column, bool parse, params ParameterData[] parameterData)
         {
-            DiagnosticOutput("GetColumn <" + typeof(T).ToString() + "> (" + column.ToString() + ")" + (parse ? " PARSE" : ""), query);
+            DebugOutput("GetColumn <" + typeof(T).ToString() + "> (" + parameterData.ToString() + ")" + (parse ? " PARSE" : ""), query);
 
             logData.IncreaseQueries(1);
 
             if (parse)
             {
                 if (column.GetType() == typeof(int))
-                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => Misc.Parsing.ParseObject<T>(n[(int)column]));
+                    return GetDataTable(mysqlCommand, query, parameterData).AsEnumerable().Select(n => Misc.Parsing.ParseObject<T>(n[(int)column]));
                 else
-                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => Misc.Parsing.ParseObject<T>(n[column.ToString()]));
+                    return GetDataTable(mysqlCommand, query, parameterData).AsEnumerable().Select(n => Misc.Parsing.ParseObject<T>(n[column.ToString()]));
             }
             else
             {
                 if (column.GetType() == typeof(int))
-                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => n[(int)column]).Cast<T>();
+                    return GetDataTable(mysqlCommand, query, parameterData).AsEnumerable().Select(n => n[(int)column]).Cast<T>();
                 else
-                    return GetDataTable(mysqlCommand, query, colData).AsEnumerable().Select(n => n[column.ToString()]).Cast<T>();
+                    return GetDataTable(mysqlCommand, query, parameterData).AsEnumerable().Select(n => n[column.ToString()]).Cast<T>();
             }
         }
 

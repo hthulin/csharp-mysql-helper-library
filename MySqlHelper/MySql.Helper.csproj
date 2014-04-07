@@ -48,9 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColumnData.cs" />
+    <Compile Include="ParameterData.cs" />
     <Compile Include="ConnectionString.cs" />
-    <Compile Include="Default.cs" />
+    <Compile Include="XCon.cs" />
     <Compile Include="InformationSchema\TableInfo.cs" />
     <Compile Include="InformationSchema\TableUpdateTime.cs" />
     <Compile Include="InformationSchema\TableUpdateTimeCacheAll.cs" />

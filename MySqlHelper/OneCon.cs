@@ -10,7 +10,7 @@ namespace MySql.MysqlHelper
     /// <summary>
     /// Uses a single connection. To be used with transactions and memory tables etc
     /// </summary>
-    public class OneCon : Default, IDisposable
+    public class OneCon : XCon, IDisposable
     {
         private IsolationLevel isolationLevel = IsolationLevel.Unspecified;
         private MySqlConnection mysqlConnection = null;
@@ -75,7 +75,7 @@ namespace MySql.MysqlHelper
                     }
                     catch (Exception ex)
                     {
-                        base.DiagnosticOutput("Dispose", ex.ToString());
+                        base.DebugOutput("Dispose", ex.ToString());
                     }
 
                 this.disposed = true;
@@ -125,12 +125,12 @@ namespace MySql.MysqlHelper
         /// </summary>
         /// <param name="database">Destination database</param>
         /// <param name="table">Destination table</param>
-        /// <param name="colData">Columns and their data</param>
+        /// <param name="parameterData">Columns and their data</param>
         /// <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
         /// <returns>Returns last insertion ID</returns>
-        public override long InsertRow(string database, string table, bool onDuplicateUpdate, params ColumnData[] colData)
+        public override long InsertRow(string database, string table, bool onDuplicateUpdate, params ParameterData[] parameterData)
         {
-            return base.InsertRow(this.mysqlCommand, database, table, onDuplicateUpdate, colData);
+            return base.InsertRow(this.mysqlCommand, database, table, onDuplicateUpdate, parameterData);
         }
 
         /// <summary>
@@ -149,17 +149,17 @@ namespace MySql.MysqlHelper
         /// <summary>
         /// Sets property field in instance based on the returned row from database
         /// </summary>
-        public override void GetRowGeneric<T>(string query, T t, params ColumnData[] colData)
+        public override void GetRowGeneric<T>(string query, T t, params ParameterData[] parameterData)
         {
-            base.GetRowGeneric<T>(this.mysqlCommand, query, t, false, colData);
+            base.GetRowGeneric<T>(this.mysqlCommand, query, t, false, parameterData);
         }
 
         /// <summary>
         /// Sets property field in instance based on the returned row from database
         /// </summary>
-        public override void GetRowGenericParse<T>(string query, T t, params ColumnData[] colData)
+        public override void GetRowGenericParse<T>(string query, T t, params ParameterData[] parameterData)
         {
-            base.GetRowGeneric<T>(this.mysqlCommand, query, t, true, colData);
+            base.GetRowGeneric<T>(this.mysqlCommand, query, t, true, parameterData);
         }
 
         /// <summary>
@@ -169,61 +169,61 @@ namespace MySql.MysqlHelper
         /// <param name="table">Destination table</param>
         /// <param name="where">Which row(s) to update, null = all</param>
         /// <param name="limit">amount of rows to update. 0 = all</param>
-        /// <param name="colData">Columns and their data</param>
+        /// <param name="parameterData">Columns and their data</param>
         /// <returns>Returns update count</returns>
-        public override long UpdateRow(string database, string table, string where, int limit, params ColumnData[] colData)
+        public override long UpdateRow(string database, string table, string where, int limit, params ParameterData[] parameterData)
         {
-            return base.UpdateRow(this.mysqlCommand, database, table, where, limit, colData);
+            return base.UpdateRow(this.mysqlCommand, database, table, where, limit, parameterData);
         }
 
         /// <summary>
         /// Sends query to server
         /// </summary>
-        public override int SendQuery(string query, params ColumnData[] colData)
+        public override int SendQuery(string query, params ParameterData[] parameterData)
         {
-            return base.SendQuery(this.mysqlCommand, query, colData);
+            return base.SendQuery(this.mysqlCommand, query, parameterData);
         }
 
         /// <summary>
         /// Returns a field from the server as a object
         /// </summary>
-        public override object GetObject(string query, params ColumnData[] colData)
+        public override object GetObject(string query, params ParameterData[] parameterData)
         {
-            return base.GetObject(this.mysqlCommand, query, colData);
+            return base.GetObject(this.mysqlCommand, query, parameterData);
         }
 
         /// Returns a field from the server as specified type using explicit type conversion
         /// Will throw exception if type is wrong
-        public T GetObject<T>(string query, bool parse = false, params ColumnData[] colData)
+        public T GetObject<T>(string query, bool parse = false, params ParameterData[] parameterData)
         {
             if (parse)
-                return Misc.Parsing.ParseObject<T>(GetObject(query, colData));
+                return Misc.Parsing.ParseObject<T>(GetObject(query, parameterData));
             else
-                return (T)GetObject(query, colData);
+                return (T)GetObject(query, parameterData);
         }
 
         /// Returns a field from the server as specified type by parsing value as string
         /// Will throw exception if type is wrong
-        public T GetObjectParse<T>(string query, params ColumnData[] colData)
+        public T GetObjectParse<T>(string query, params ParameterData[] parameterData)
         {
-            return GetObject<T>(query, true, colData);
+            return GetObject<T>(query, true, parameterData);
         }
 
         /// <summary>
         /// Returns all selected data as a datatable
         /// </summary>
-        public override DataTable GetDataTable(string query, params ColumnData[] colData)
+        public override DataTable GetDataTable(string query, params ParameterData[] parameterData)
         {
-            return base.GetDataTable(mysqlCommand, query, colData);
+            return base.GetDataTable(mysqlCommand, query, parameterData);
         }
 
         /// <summary>
         /// Returns two dimensional object array with data
         /// </summary>
         /// <returns>Two dimensional object array</returns>
-        public object[,] GetDataTableAsObjectArray2d(string query, params ColumnData[] colData)
+        public object[,] GetDataTableAsObjectArray2d(string query, params ParameterData[] parameterData)
         {
-            using (DataTable dt = base.GetDataTable(mysqlCommand, query, colData))
+            using (DataTable dt = base.GetDataTable(mysqlCommand, query, parameterData))
             {
                 object[,] returnData = new object[dt.Rows.Count, dt.Columns.Count];
 
@@ -239,18 +239,18 @@ namespace MySql.MysqlHelper
         /// Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
         /// </summary>
         /// <typeparam name="T">Instance type</typeparam>
-        public override IEnumerable<T> GetIEnumerable<T>(string query, params ColumnData[] colData)
+        public override IEnumerable<T> GetIEnumerable<T>(string query, params ParameterData[] parameterData)
         {
-            return base.GetIEnumerable<T>(mysqlCommand, query, false, colData);
+            return base.GetIEnumerable<T>(mysqlCommand, query, false, parameterData);
         }
 
         /// <summary>
         /// Returns a ienumerable of instances. Instance property name and type must reflect table column name and type. Parses database content
         /// </summary>
         /// <typeparam name="T">Instance type</typeparam>
-        public override IEnumerable<T> GetIEnumerableParse<T>(string query, params ColumnData[] colData)
+        public override IEnumerable<T> GetIEnumerableParse<T>(string query, params ParameterData[] parameterData)
         {
-            return base.GetIEnumerable<T>(mysqlCommand, query, true, colData);
+            return base.GetIEnumerable<T>(mysqlCommand, query, true, parameterData);
         }
 
         /// <summary>
@@ -258,9 +258,9 @@ namespace MySql.MysqlHelper
         /// </summary>
         /// <typeparam name="Y">Key type</typeparam>
         /// <typeparam name="T">Instance type</typeparam>
-        public override IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey, params ColumnData[] colData)
+        public override IDictionary<Y, T> GetIDictionary<Y, T>(string keyColumn, string query, bool parseKey, params ParameterData[] parameterData)
         {
-            return base.GetIDictionary<Y, T>(mysqlCommand, keyColumn, query, parseKey, colData);
+            return base.GetIDictionary<Y, T>(mysqlCommand, keyColumn, query, parseKey, parameterData);
         }
 
         /// <summary>
@@ -270,11 +270,11 @@ namespace MySql.MysqlHelper
         /// <param name="query">Select query</param>
         /// <param name="column">Return column number</param>
         /// <param name="parse">Parses the object of explicit conversion</param>
-        /// <param name="colData">Parameters</param>
+        /// <param name="parameterData">Parameters</param>
         /// <returns>Selected data</returns>
-        public override IEnumerable<T> GetColumn<T>(string query, int column, bool parse, params ColumnData[] colData)
+        public override IEnumerable<T> GetColumn<T>(string query, int column, bool parse, params ParameterData[] parameterData)
         {
-            return base.GetColumn<T>(mysqlCommand, query, column, parse, colData);
+            return base.GetColumn<T>(mysqlCommand, query, column, parse, parameterData);
         }
 
         /// <summary>
@@ -284,11 +284,11 @@ namespace MySql.MysqlHelper
         /// <param name="query">Select query</param>
         /// <param name="column">Return column name</param>
         /// <param name="parse">Parses the object of explicit conversion</param>
-        /// <param name="colData">Parameters</param>
+        /// <param name="parameterData">Parameters</param>
         /// <returns>Selected data</returns>
-        public override IEnumerable<T> GetColumn<T>(string query, string column, bool parse, params ColumnData[] colData)
+        public override IEnumerable<T> GetColumn<T>(string query, string column, bool parse, params ParameterData[] parameterData)
         {
-            return base.GetColumn<T>(mysqlCommand, query, column, parse);
+            return base.GetColumn<T>(mysqlCommand, query, column, parse, parameterData);
         }
 
         /// <summary>

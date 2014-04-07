@@ -18,19 +18,23 @@ namespace MySql.MysqlHelper.InformationSchema
         private MultiCon multiCon = null;
         private DateTime lastUpdateOfCache = new DateTime(1970, 1, 1);
 
+        private string checkOnlyDatabase = null;
+
         /// <summary>
         /// Constructor for connection string
         /// </summary>
-        public TableUpdateTimeCacheAll(ConnectionString connectionString)
+        public TableUpdateTimeCacheAll(ConnectionString connectionString, string onlyCheckDatabase = null)
         {
+            this.checkOnlyDatabase = onlyCheckDatabase;
             this.multiCon = new MultiCon(connectionString);
         }
 
         /// <summary>
         /// Constructor for connection instance
         /// </summary>
-        public TableUpdateTimeCacheAll(MultiCon multiCon)
+        public TableUpdateTimeCacheAll(MultiCon multiCon, string onlyCheckDatabase = null)
         {
+            this.checkOnlyDatabase = onlyCheckDatabase;
             this.multiCon = multiCon;
         }
 
@@ -61,7 +65,15 @@ namespace MySql.MysqlHelper.InformationSchema
             {
                 if (informationSchemaCache == null || (DateTime.Now - lastUpdateOfCache) >= updateCacheIntervalTimeSpan)
                 {
-                    informationSchemaCache = multiCon.GetDataTable("SELECT `TABLE_SCHEMA`,`TABLE_NAME`,`UPDATE_TIME` FROM `information_schema`.`TABLES` WHERE `UPDATE_TIME` IS NOT NULL").AsEnumerable().ToDictionary(n => new Tuple<string, string>(n.Field<string>("TABLE_SCHEMA"), n.Field<string>("TABLE_NAME")), n => n.Field<DateTime>("UPDATE_TIME"));
+                    informationSchemaCache = multiCon.GetDataTable(
+                        string.Format("SELECT `TABLE_SCHEMA`,`TABLE_NAME`,`UPDATE_TIME` FROM `information_schema`.`TABLES` WHERE {0} `UPDATE_TIME` IS NOT NULL",
+                            string.IsNullOrWhiteSpace(checkOnlyDatabase) ? string.Empty : "`TABLE_SCHEMA`=@databasename &&"),
+                            string.IsNullOrWhiteSpace(checkOnlyDatabase) ? null : new ParameterData("databasename", checkOnlyDatabase))
+                            .AsEnumerable()
+                            .ToDictionary(n =>
+                                new Tuple<string, string>(n.Field<string>("TABLE_SCHEMA"), n.Field<string>("TABLE_NAME")), n => n.Field<DateTime>("UPDATE_TIME")
+                                );
+
                     lastUpdateOfCache = DateTime.Now;
                 }
 
@@ -70,7 +82,7 @@ namespace MySql.MysqlHelper.InformationSchema
                         return false;
                     else
                         throw new Exception("Table does not exist in Information Schema!");
-                
+
                 Tuple<string, string, string> identifier = new Tuple<string, string, string>(askerId, database, table);
 
                 DateTime lastModified = informationSchemaCache[new Tuple<string, string>(database, table)];
