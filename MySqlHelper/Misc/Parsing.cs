@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MySql.MysqlHelper.Misc
 {
     public class Parsing
     {
+        #region Methods
+
         public static object ParseObject(Type newType, object o)
         {
             if (newType == typeof(int))
@@ -55,5 +54,7 @@ namespace MySql.MysqlHelper.Misc
         {
             return (T)ParseObject(typeof(T), o);
         }
+
+        #endregion Methods
     }
 }

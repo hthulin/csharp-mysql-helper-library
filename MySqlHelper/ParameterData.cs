@@ -1,19 +1,68 @@
 ﻿using MySql.Data.MySqlClient;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace MySql.MysqlHelper
 {
+    /// <summary>
+    /// Legacy support
+    /// </summary>
+    public class ColumnData : ParameterData
+    {
+        #region Constructors
+
+        public ColumnData(string columnName, object cellValue)
+        {
+            base.parameterName = columnName;
+            base.parameterData = cellValue;
+        }
+
+        #endregion Constructors
+
+        #region Properties
+
+        public string columnName
+        {
+            get { return base.parameterName; }
+            set { base.parameterName = value; }
+        }
+
+        public object data
+        {
+            get { return base.parameterData; }
+            set { base.parameterData = value; }
+        }
+
+        #endregion Properties
+    }
+
     /// <summary>
     /// Container class for column name and column data. Also used for parameter data
     /// </summary>
     public class ParameterData
     {
-        public string parameterName { get; set; }
+        #region Fields
 
         private object _parameterData = null;
+
+        #endregion Fields
+
+        #region Constructors
+
+        public ParameterData()
+        {
+        }
+
+        public ParameterData(string parameterName, object parameterData)
+        {
+            this.parameterName = parameterName;
+            this.parameterData = parameterData;
+        }
+
+        #endregion Constructors
+
+        #region Properties
+
         public object parameterData
         {
             get
@@ -29,17 +78,25 @@ namespace MySql.MysqlHelper
             }
         }
 
-        public ParameterData() { }
+        public string parameterName { get; set; }
 
-        public ParameterData(string parameterName, object parameterData)
+        #endregion Properties
+
+        #region Methods
+
+        public static IEnumerable<ParameterData> GetGenericWriteMysqlParameters<T>(T data) where T : new()
         {
-            this.parameterName = parameterName;
-            this.parameterData = parameterData;
+            return typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetProperties())).Select(n => new ParameterData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), n.GetValue(data, null)));
         }
 
-        public override string ToString()
+        public static IEnumerable<ParameterData> GetGenericWriteMysqlParameters(object data)
         {
-            return string.Format("{0} : {1}", parameterName, parameterData);
+            return data.GetType().GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, data.GetType().GetProperties())).Select(n => new ParameterData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, data.GetType().GetProperties()), n.GetValue(data, null)));
+        }
+
+        public MySqlParameter GetMysqlParameter()
+        {
+            return new MySqlParameter("@" + parameterName, parameterData);
         }
 
         public string GetParameterWhereString()
@@ -50,38 +107,11 @@ namespace MySql.MysqlHelper
                 return string.Format("`{0}`=@{0}", parameterName);
         }
 
-        public MySqlParameter GetMysqlParameter()
+        public override string ToString()
         {
-            return new MySqlParameter("@" + parameterName, parameterData);
+            return string.Format("{0} : {1}", parameterName, parameterData);
         }
 
-        public static IEnumerable<ParameterData> GetGenericWriteMysqlParameters<T>(T data) where T : new()
-        {
-            return typeof(T).GetProperties().Where(n => Misc.MysqlTableAttributeFunctions.GetPropertyShouldWrite(n, typeof(T).GetProperties())).Select(n => new ParameterData(Misc.MysqlTableAttributeFunctions.GetPropertyDatabaseColumnName(n, typeof(T).GetProperties()), n.GetValue(data, null)));
-        }
-    }
-
-    /// <summary>
-    /// Legacy support
-    /// </summary>
-    public class ColumnData : ParameterData
-    {
-        public string columnName
-        {
-            get { return base.parameterName; }
-            set { base.parameterName = value; }
-        }
-
-        public object data
-        {
-            get { return base.parameterData; }
-            set { base.parameterData = value; }
-        }
-
-        public ColumnData(string columnName, object cellValue)
-        {
-            base.parameterName = columnName;
-            base.parameterData = cellValue;
-        }
+        #endregion Methods
     }
 }

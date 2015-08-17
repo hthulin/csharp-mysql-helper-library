@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using MySql.Data.MySqlClient;
-
 
 namespace MySql.MysqlHelper.InformationSchema
 {
     public class TableUpdateTimeCacheAll
     {
+        #region Fields
+
         private readonly object _lock = new object();
 
-        private Dictionary<Tuple<string, string, string>, DateTime> questionCache = new Dictionary<Tuple<string, string, string>, DateTime>();
-        private Dictionary<Tuple<string, string>, DateTime> informationSchemaCache = null;
-
-        private MultiCon multiCon = null;
-        private DateTime lastUpdateOfCache = new DateTime(1970, 1, 1);
-
         private string checkOnlyDatabase = null;
+        private Dictionary<Tuple<string, string>, DateTime> informationSchemaCache = null;
+        private DateTime lastUpdateOfCache = new DateTime(1970, 1, 1);
+        private MultiCon multiCon = null;
+        private Dictionary<Tuple<string, string, string>, DateTime> questionCache = new Dictionary<Tuple<string, string, string>, DateTime>();
+
+        #endregion Fields
+
+        #region Constructors
 
         /// <summary>
         /// Constructor for connection string
@@ -38,18 +39,13 @@ namespace MySql.MysqlHelper.InformationSchema
             this.multiCon = multiCon;
         }
 
-        /// <summary>
-        /// Sets current connection instance
-        /// </summary>
-        /// <param name="multiCon"></param>
-        public void SetMultiCon(MultiCon multiCon)
-        {
-            this.multiCon = multiCon;
-        }
+        #endregion Constructors
+
+        #region Methods
 
         /// <summary>
         /// Determains if a MyISAM table has been updated. Always returns true on first call.
-        /// Keeps an cache of the entire update time information for all the tables. 
+        /// Keeps an cache of the entire update time information for all the tables.
         /// Answer is given in the context of the askerID, so this instance may be shared
         /// between multiple tasks.
         /// </summary>
@@ -91,11 +87,22 @@ namespace MySql.MysqlHelper.InformationSchema
                     questionCache.Add(identifier, lastModified);
                 else
                     if (questionCache[identifier] == lastModified)
-                        return false;
-                    else
-                        questionCache[identifier] = lastModified;
+                    return false;
+                else
+                    questionCache[identifier] = lastModified;
             }
             return true;
         }
+
+        /// <summary>
+        /// Sets current connection instance
+        /// </summary>
+        /// <param name="multiCon"></param>
+        public void SetMultiCon(MultiCon multiCon)
+        {
+            this.multiCon = multiCon;
+        }
+
+        #endregion Methods
     }
 }

@@ -4,64 +4,19 @@
         <name>MySqlHelper</name>
     </assembly>
     <members>
-        <member name="T:MySql.MysqlHelper.ParameterData">
-            <summary>
-            Container class for column name and column data. Also used for parameter data
-            </summary>
-        </member>
         <member name="T:MySql.MysqlHelper.ColumnData">
             <summary>
             Legacy support
             </summary>
         </member>
+        <member name="T:MySql.MysqlHelper.ParameterData">
+            <summary>
+            Container class for column name and column data. Also used for parameter data
+            </summary>
+        </member>
         <member name="T:MySql.MysqlHelper.ConnectionString">
             <summary>
             Helper for generating connection string
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.server">
-            <summary>
-            The name or network address of the instance of MySQL to which to connect. Multiple hosts can be specified separated by commas. This can be useful where multiple MySQL servers are configured for replication and you are not concerned about the precise server you are connecting to. No attempt is made by the provider to synchronize writes to the database, so take care when using this option. In Unix environment with Mono, this can be a fully qualified path to a MySQL socket file. With this configuration, the Unix socket is used instead of the TCP/IP socket. Currently, only a single socket name can be given, so accessing MySQL in a replicated environment using Unix sockets is not currently supported.
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.username">
-            <summary>
-            The MySQL login account being used.
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.password">
-            <summary>
-            The password for the MySQL account being used.
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.port">
-            <summary>
-            The port MySQL is using to listen for connections. This value is ignored if Unix socket is used.
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.pooling">
-            <summary>
-            When true, the MySqlConnection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool. Recognized values are true, false, yes, and no.
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.compress">
-            <summary>
-            Setting this option to true enables compression of packets exchanged between the client and the server. This exchange is defined by the MySQL client/server protocol. Compression is used if both client and server support ZLIB compression, and the client has requested compression using this option. A compressed packet header is: packet length (3 bytes), packet number (1 byte), and Uncompressed Packet Length (3 bytes). The Uncompressed Packet Length is the number of bytes in the original, uncompressed packet. If this is zero, the data in this packet has not been compressed. When the compression protocol is in use, either the client or the server may compress packets. However, compression will not occur if the compressed length is greater than the original length. Thus, some packets will contain compressed data while other packets will not. 
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.defaultCommandTimeout">
-            <summary>
-            Sets the default value of the command timeout to be used. This does not supersede the individual command timeout property on an individual command object. If you set the command timeout property, that will be used. This option was added in Connector/Net 5.1.4
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.connectionTimeout">
-            <summary>
-            The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
-            </summary>
-        </member>
-        <member name="F:MySql.MysqlHelper.ConnectionString.convertZeroDateTime">
-            <summary>
-            True to have MySqlDataReader.GetValue() and MySqlDataReader.GetDateTime() return DateTime.MinValue for date or datetime columns that have disallowed values.
             </summary>
         </member>
         <member name="F:MySql.MysqlHelper.ConnectionString.allowBatch">
@@ -79,6 +34,51 @@
             If set to True, MySqlDataReader.GetValue() returns a MySqlDateTime object for date or datetime columns that have disallowed values, such as zero datetime values, and a System.DateTime object for valid values. If set to False (the default setting) it causes a System.DateTime object to be returned for all valid values and an exception to be thrown for disallowed values, such as zero datetime values.
             </summary>
         </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.compress">
+            <summary>
+            Setting this option to true enables compression of packets exchanged between the client and the server. This exchange is defined by the MySQL client/server protocol. Compression is used if both client and server support ZLIB compression, and the client has requested compression using this option. A compressed packet header is: packet length (3 bytes), packet number (1 byte), and Uncompressed Packet Length (3 bytes). The Uncompressed Packet Length is the number of bytes in the original, uncompressed packet. If this is zero, the data in this packet has not been compressed. When the compression protocol is in use, either the client or the server may compress packets. However, compression will not occur if the compressed length is greater than the original length. Thus, some packets will contain compressed data while other packets will not.
+            </summary>
+        </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.connectionTimeout">
+            <summary>
+            The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
+            </summary>
+        </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.convertZeroDateTime">
+            <summary>
+            True to have MySqlDataReader.GetValue() and MySqlDataReader.GetDateTime() return DateTime.MinValue for date or datetime columns that have disallowed values.
+            </summary>
+        </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.defaultCommandTimeout">
+            <summary>
+            Sets the default value of the command timeout to be used. This does not supersede the individual command timeout property on an individual command object. If you set the command timeout property, that will be used. This option was added in Connector/Net 5.1.4
+            </summary>
+        </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.password">
+            <summary>
+            The password for the MySQL account being used.
+            </summary>
+        </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.pooling">
+            <summary>
+            When true, the MySqlConnection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool. Recognized values are true, false, yes, and no.
+            </summary>
+        </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.port">
+            <summary>
+            The port MySQL is using to listen for connections. This value is ignored if Unix socket is used.
+            </summary>
+        </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.server">
+            <summary>
+            The name or network address of the instance of MySQL to which to connect. Multiple hosts can be specified separated by commas. This can be useful where multiple MySQL servers are configured for replication and you are not concerned about the precise server you are connecting to. No attempt is made by the provider to synchronize writes to the database, so take care when using this option. In Unix environment with Mono, this can be a fully qualified path to a MySQL socket file. With this configuration, the Unix socket is used instead of the TCP/IP socket. Currently, only a single socket name can be given, so accessing MySQL in a replicated environment using Unix sockets is not currently supported.
+            </summary>
+        </member>
+        <member name="F:MySql.MysqlHelper.ConnectionString.username">
+            <summary>
+            The MySQL login account being used.
+            </summary>
+        </member>
         <member name="M:MySql.MysqlHelper.ConnectionString.#ctor(System.String,System.String,System.String,System.UInt32)">
             <summary>
             Constructor
@@ -90,6 +90,16 @@
             </summary>
             <returns>Returns a valid connection string</returns>
         </member>
+        <member name="P:MySql.MysqlHelper.XCon.connectionString">
+            <summary>
+            Current connectionstring in use
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.XCon.OpenConnection(MySql.Data.MySqlClient.MySqlConnection,System.Int32)">
+            <summary>
+            Opens a connection to the server
+            </summary>
+        </member>
         <member name="M:MySql.MysqlHelper.XCon.SetConnectionString(MySql.MysqlHelper.ConnectionString)">
             <summary>
             Sets connection string through helper instance
@@ -100,16 +110,6 @@
             Generates instance ID
             </summary>
             <returns>Current Instance ID</returns>
-        </member>
-        <member name="M:MySql.MysqlHelper.XCon.OpenConnection(MySql.Data.MySqlClient.MySqlConnection,System.Int32)">
-            <summary>
-            Opens a connection to the server
-            </summary>
-        </member>
-        <member name="P:MySql.MysqlHelper.XCon.connectionString">
-            <summary>
-            Current connectionstring in use
-            </summary>
         </member>
         <member name="T:MySql.MysqlHelper.InformationSchema.TableUpdateTime">
             <summary>
@@ -142,16 +142,10 @@
             Constructor for connection instance
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.SetMultiCon(MySql.MysqlHelper.MultiCon)">
-            <summary>
-            Sets current connection instance
-            </summary>
-            <param name="multiCon"></param>
-        </member>
         <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.HasChanged(System.String,System.String,System.TimeSpan,System.String,System.Boolean)">
             <summary>
             Determains if a MyISAM table has been updated. Always returns true on first call.
-            Keeps an cache of the entire update time information for all the tables. 
+            Keeps an cache of the entire update time information for all the tables.
             Answer is given in the context of the askerID, so this instance may be shared
             between multiple tasks.
             </summary>
@@ -162,11 +156,35 @@
             <param name="returnFalseIfTableDoesNotExist"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:MySql.MysqlHelper.Misc.MySqlColumnAttribute" -->
-        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetUsesProperties(System.Reflection.PropertyInfo[])">
+        <member name="M:MySql.MysqlHelper.InformationSchema.TableUpdateTimeCacheAll.SetMultiCon(MySql.MysqlHelper.MultiCon)">
             <summary>
-            Returns wheter or not any of the properties uses the mysqltable attribute
+            Sets current connection instance
             </summary>
+            <param name="multiCon"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:MySql.MysqlHelper.Misc.MySqlColumnAttribute" -->
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetAlterTableString(System.Type,System.String,System.String,MySql.MysqlHelper.XCon,System.Boolean)">
+            <summary>
+            Alters table based on attribute "MysqlCreateType" information
+            </summary>
+            <param name="t">Type of object</param>
+            <param name="database">Database name</param>
+            <param name="table">Table name</param>
+            <param name="xcon">Multicon / Onecon instance</param>
+            <param name="dropUnusedColumns">Removes unused columns</param>
+            <returns></returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetCreateTableString(System.Type,System.String,System.String,System.Boolean,System.String,System.String)">
+            <summary>
+            Creates new table based on attribute "MysqlCreateType" information
+            </summary>
+            <param name="t">Object type</param>
+            <param name="database">Database name</param>
+            <param name="table">Table name</param>
+            <param name="createIfNotExists">Creates only if not exist</param>
+            <param name="primaryKey">Primary key</param>
+            <param name="engine">Database engine</param>
+            <returns></returns>
         </member>
         <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetHasProperty(System.Reflection.PropertyInfo)">
             <summary>
@@ -189,19 +207,24 @@
             True is always returned when neither of the properties use the mysqltable attribute, else returnes whatever the property attribute WriteToDatabase field is set to. If no attribute, false is returned
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric``1(System.Data.DataRow,``0,System.Boolean)">
-            <summary>
-            Loads data from DataRow into instance
-            </summary>
-        </member>
         <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetReadColumnNames(System.Type)">
             <summary>
             Returns the names of all properties to be read from the database
             </summary>
         </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetUsesProperties(System.Reflection.PropertyInfo[])">
+            <summary>
+            Returns wheter or not any of the properties uses the mysqltable attribute
+            </summary>
+        </member>
         <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.GetWriteColumnNames(System.Type)">
             <summary>
             Returns the names of all properties to be written to the database
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.Misc.MysqlTableAttributeFunctions.LoadDataRowIntoGeneric``1(System.Data.DataRow,``0,System.Boolean)">
+            <summary>
+            Loads data from DataRow into instance
             </summary>
         </member>
         <member name="M:MySql.MysqlHelper.Misc.Status.GetServerDateTime">
@@ -227,47 +250,6 @@
             </summary>
             <param name="connectionString">Connection string</param>
         </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.InsertRow(System.String,System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Inserts a row and returns last insertion id
-            </summary>
-            <param name="database">Destination database</param>
-            <param name="table">Destination table</param>
-            <param name="parameterData">Columns and their data</param>
-            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
-            <returns>Returns last insertion ID</returns>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.InsertRowGeneric``1(System.String,System.String,System.Boolean,``0)">
-            <summary>
-            Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
-            </summary>
-            <param name="database">Destination database</param>
-            <param name="table">Destination table</param>
-            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
-            <param name="data">Instance where properties and type match database structure</param>
-            <returns>Returns last insertion ID</returns>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetRowGeneric``1(System.String,``0,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Sets property field in instance based on the returned row from database
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetRowGenericParse``1(System.String,``0,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Sets property field in instance based on the returned row from database by parsing content
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.UpdateRow(System.String,System.String,System.String,System.Int32,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Updates a row or rows
-            </summary>
-            <param name="database">Destination database</param>
-            <param name="table">Destination table</param>
-            <param name="where">Which row(s) to update, null = all</param>
-            <param name="limit">amount of rows to update. 0 = all</param>
-            <param name="parameterData">Columns and their data</param>
-            <returns>Returns update count</returns>
-        </member>
         <member name="M:MySql.MysqlHelper.MultiCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object},System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Sends an entire collection to specified column
@@ -287,56 +269,6 @@
             <param name="table">Destination table</param>
             <param name="listData"></param>
             <param name="onDuplicateUpdate"></param>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetObject(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a field from the server as a object
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetObject``1(System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a field from the server as specified type using explicit type conversion
-            Will throw exception if type is wrong
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetObjectParse``1(System.String,MySql.MysqlHelper.ParameterData[])">
-            Returns a field from the server as specified type by parsing value as string
-            Will throw exception if type is wrong
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.SendQuery(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Sends query to server
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetDataTable(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns all selected data as a datatable
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetDataTableAsObjectArray2d(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns two dimensional object array with data
-            </summary>
-            <returns>Two dimensional object array</returns>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
-            </summary>
-            <typeparam name="T">Instance type</typeparam>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerableParse``1(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a ienumerable of instances. Instance property name and type must reflect table column name and type. Parses database content
-            </summary>
-            <typeparam name="T">Instance type</typeparam>
-        </member>
-        <member name="M:MySql.MysqlHelper.MultiCon.GetIDictionary``2(System.String,System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a idictionary of instances. Instance property name and type must reflect table column name and type
-            </summary>
-            <typeparam name="Y">Key type</typeparam>
-            <typeparam name="T">Instance type</typeparam>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetColumn``1(System.String,System.Int32,System.Boolean,MySql.MysqlHelper.ParameterData[])">
             <summary>
@@ -359,6 +291,97 @@
             <param name="parse">Parses the object of explicit conversion</param>
             <param name="parameterData">Parameters</param>
             <returns>Selected data</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetDataTable(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns all selected data as a datatable
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetDataTableAsObjectArray2d(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns two dimensional object array with data
+            </summary>
+            <returns>Two dimensional object array</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetIDictionary``2(System.String,System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a idictionary of instances. Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="Y">Key type</typeparam>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetIEnumerableParse``1(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a ienumerable of instances. Instance property name and type must reflect table column name and type. Parses database content
+            </summary>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObject(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a field from the server as a object
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObject``1(System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a field from the server as specified type using explicit type conversion
+            Will throw exception if type is wrong
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetObjectParse``1(System.String,MySql.MysqlHelper.ParameterData[])">
+            Returns a field from the server as specified type by parsing value as string
+            Will throw exception if type is wrong
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetRowGeneric``1(System.String,``0,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Sets property field in instance based on the returned row from database
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.GetRowGenericParse``1(System.String,``0,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Sets property field in instance based on the returned row from database by parsing content
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.InsertRow(System.String,System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Inserts a row and returns last insertion id
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="parameterData">Columns and their data</param>
+            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
+            <returns>Returns last insertion ID</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.InsertRowGeneric``1(System.String,System.String,System.Boolean,``0)">
+            <summary>
+            Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
+            <param name="data">Instance where properties and type match database structure</param>
+            <returns>Returns last insertion ID</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.SendQuery(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Sends query to server
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.MultiCon.UpdateRow(System.String,System.String,System.String,System.Int32,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Updates a row or rows
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="where">Which row(s) to update, null = all</param>
+            <param name="limit">amount of rows to update. 0 = all</param>
+            <param name="parameterData">Columns and their data</param>
+            <returns>Returns update count</returns>
         </member>
         <member name="M:MySql.MysqlHelper.MultiCon.GetMysqlConnection">
             <summary>
@@ -386,105 +409,31 @@
             <param name="isTransaction"></param>
             <param name="isolationLevel"></param>
         </member>
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object},System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Sends an entire collection to specified column
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Sends an entire datatable to specified table. Make sure that column names of table correspond to database
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.BulkSendGeneric``1(System.String,System.String,System.Collections.Generic.IEnumerable{``0},System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Sends generic IEnumerable to specified table and database. Make sure that the Generic properties and data type correspond
+            to database column name and column type
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="listData"></param>
+            <param name="onDuplicateUpdate"></param>
+        </member>
         <member name="M:MySql.MysqlHelper.OneCon.Commit(System.Boolean)">
             <summary>
             Commits transaction
             </summary>
             <param name="respring">if a new transaction is to follow, this should be true</param>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.Rollback(System.Boolean)">
-            <summary>
-            Rolls the transaction back
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.InsertRow(System.String,System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Inserts a row and returns last insertion id
-            </summary>
-            <param name="database">Destination database</param>
-            <param name="table">Destination table</param>
-            <param name="parameterData">Columns and their data</param>
-            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
-            <returns>Returns last insertion ID</returns>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.InsertRowGeneric``1(System.String,System.String,System.Boolean,``0)">
-            <summary>
-            Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
-            </summary>
-            <param name="database">Destination database</param>
-            <param name="table">Destination table</param>
-            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
-            <param name="data">Instance where properties and type match database structure</param>
-            <returns>Returns last insertion ID</returns>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetRowGeneric``1(System.String,``0,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Sets property field in instance based on the returned row from database
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetRowGenericParse``1(System.String,``0,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Sets property field in instance based on the returned row from database
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.UpdateRow(System.String,System.String,System.String,System.Int32,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Updates a row or rows
-            </summary>
-            <param name="database">Destination database</param>
-            <param name="table">Destination table</param>
-            <param name="where">Which row(s) to update, null = all</param>
-            <param name="limit">amount of rows to update. 0 = all</param>
-            <param name="parameterData">Columns and their data</param>
-            <returns>Returns update count</returns>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.SendQuery(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Sends query to server
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetObject(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a field from the server as a object
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetObject``1(System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
-            Returns a field from the server as specified type using explicit type conversion
-            Will throw exception if type is wrong
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetObjectParse``1(System.String,MySql.MysqlHelper.ParameterData[])">
-            Returns a field from the server as specified type by parsing value as string
-            Will throw exception if type is wrong
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetDataTable(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns all selected data as a datatable
-            </summary>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetDataTableAsObjectArray2d(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns two dimensional object array with data
-            </summary>
-            <returns>Two dimensional object array</returns>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
-            </summary>
-            <typeparam name="T">Instance type</typeparam>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerableParse``1(System.String,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a ienumerable of instances. Instance property name and type must reflect table column name and type. Parses database content
-            </summary>
-            <typeparam name="T">Instance type</typeparam>
-        </member>
-        <member name="M:MySql.MysqlHelper.OneCon.GetIDictionary``2(System.String,System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
-            <summary>
-            Returns a idictionary of instances. Instance property name and type must reflect table column name and type
-            </summary>
-            <typeparam name="Y">Key type</typeparam>
-            <typeparam name="T">Instance type</typeparam>
         </member>
         <member name="M:MySql.MysqlHelper.OneCon.GetColumn``1(System.String,System.Int32,System.Boolean,MySql.MysqlHelper.ParameterData[])">
             <summary>
@@ -508,25 +457,99 @@
             <param name="parameterData">Parameters</param>
             <returns>Selected data</returns>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.String,System.Collections.Generic.IEnumerable{System.Object},System.Boolean,System.Int32,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetDataTable(System.String,MySql.MysqlHelper.ParameterData[])">
             <summary>
-            Sends an entire collection to specified column
+            Returns all selected data as a datatable
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.BulkSend(System.String,System.String,System.Data.DataTable,System.Boolean,System.Int32,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetDataTableAsObjectArray2d(System.String,MySql.MysqlHelper.ParameterData[])">
             <summary>
-            Sends an entire datatable to specified table. Make sure that column names of table correspond to database
+            Returns two dimensional object array with data
+            </summary>
+            <returns>Two dimensional object array</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetIDictionary``2(System.String,System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a idictionary of instances. Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="Y">Key type</typeparam>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerable``1(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a ienumerable of instances.  Instance property name and type must reflect table column name and type
+            </summary>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetIEnumerableParse``1(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a ienumerable of instances. Instance property name and type must reflect table column name and type. Parses database content
+            </summary>
+            <typeparam name="T">Instance type</typeparam>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetObject(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Returns a field from the server as a object
             </summary>
         </member>
-        <member name="M:MySql.MysqlHelper.OneCon.BulkSendGeneric``1(System.String,System.String,System.Collections.Generic.IEnumerable{``0},System.Boolean,System.Int32,System.Boolean)">
+        <member name="M:MySql.MysqlHelper.OneCon.GetObject``1(System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
+            Returns a field from the server as specified type using explicit type conversion
+            Will throw exception if type is wrong
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetObjectParse``1(System.String,MySql.MysqlHelper.ParameterData[])">
+            Returns a field from the server as specified type by parsing value as string
+            Will throw exception if type is wrong
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetRowGeneric``1(System.String,``0,MySql.MysqlHelper.ParameterData[])">
             <summary>
-            Sends generic IEnumerable to specified table and database. Make sure that the Generic properties and data type correspond
-            to database column name and column type
+            Sets property field in instance based on the returned row from database
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.GetRowGenericParse``1(System.String,``0,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Sets property field in instance based on the returned row from database
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.InsertRow(System.String,System.String,System.Boolean,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Inserts a row and returns last insertion id
             </summary>
             <param name="database">Destination database</param>
             <param name="table">Destination table</param>
-            <param name="listData"></param>
-            <param name="onDuplicateUpdate"></param>
+            <param name="parameterData">Columns and their data</param>
+            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
+            <returns>Returns last insertion ID</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.InsertRowGeneric``1(System.String,System.String,System.Boolean,``0)">
+            <summary>
+            Inserts or updates a row and returns last insertion id. Generic data properties and data type must correspond to column names and column type
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="onDuplicateUpdate">If duplicate, update duplicate with new values</param>
+            <param name="data">Instance where properties and type match database structure</param>
+            <returns>Returns last insertion ID</returns>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.Rollback(System.Boolean)">
+            <summary>
+            Rolls the transaction back
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.SendQuery(System.String,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Sends query to server
+            </summary>
+        </member>
+        <member name="M:MySql.MysqlHelper.OneCon.UpdateRow(System.String,System.String,System.String,System.Int32,MySql.MysqlHelper.ParameterData[])">
+            <summary>
+            Updates a row or rows
+            </summary>
+            <param name="database">Destination database</param>
+            <param name="table">Destination table</param>
+            <param name="where">Which row(s) to update, null = all</param>
+            <param name="limit">amount of rows to update. 0 = all</param>
+            <param name="parameterData">Columns and their data</param>
+            <returns>Returns update count</returns>
         </member>
     </members>
 </doc>

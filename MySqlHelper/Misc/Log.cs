@@ -1,30 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace MySql.MysqlHelper.Misc
+﻿namespace MySql.MysqlHelper.Misc
 {
     public class Log
     {
+        #region Fields
+
         private readonly object _lock = new object();
 
         private ulong mysqlQueries = 0;
         private ulong mysqlUpdates = 0;
 
-        public ulong GetAndResetMysqlUpdates()
-        {
-            try
-            {
-                lock (_lock)
-                    return mysqlUpdates;
-            }
-            finally
-            {
-                lock (_lock)
-                    mysqlUpdates = 0;
-            }
-        }
+        #endregion Fields
+
+        #region Methods
 
         public ulong GetAndResetMysqlQueries()
         {
@@ -40,6 +27,20 @@ namespace MySql.MysqlHelper.Misc
             }
         }
 
+        public ulong GetAndResetMysqlUpdates()
+        {
+            try
+            {
+                lock (_lock)
+                    return mysqlUpdates;
+            }
+            finally
+            {
+                lock (_lock)
+                    mysqlUpdates = 0;
+            }
+        }
+
         public ulong GetMysqlQueries()
         {
             lock (_lock) return mysqlQueries;
@@ -48,6 +49,18 @@ namespace MySql.MysqlHelper.Misc
         public ulong GetMysqlUpdates()
         {
             lock (_lock) return mysqlUpdates;
+        }
+
+        public void IncreaseQueries(ulong queries)
+        {
+            lock (_lock)
+                mysqlQueries += queries;
+        }
+
+        public void IncreaseUpdates(ulong updates)
+        {
+            lock (_lock)
+                mysqlUpdates += updates;
         }
 
         public void ResetUpdatesAndQueriesCount()
@@ -59,16 +72,6 @@ namespace MySql.MysqlHelper.Misc
             }
         }
 
-        public void IncreaseUpdates(ulong updates)
-        {
-            lock (_lock)
-                mysqlUpdates += updates;
-        }
-
-        public void IncreaseQueries(ulong queries)
-        {
-            lock (_lock)
-                mysqlQueries += queries;
-        }
+        #endregion Methods
     }
 }

@@ -1,15 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MySql.MysqlHelper.Misc
 {
     public class Status
     {
+        #region Fields
+
         private double differenceSeconds = double.NaN;
 
         private XCon xCon = null;
+
+        #endregion Fields
+
+        #region Constructors
+
+        public Status(XCon xCon)
+        {
+            this.xCon = xCon;
+        }
+
+        #endregion Constructors
+
+        #region Methods
 
         /// <summary>
         /// Returns server timestamp. Only needs to query the database once.
@@ -23,9 +35,6 @@ namespace MySql.MysqlHelper.Misc
             return DateTime.Now.AddSeconds(differenceSeconds);
         }
 
-        public Status(XCon xCon)
-        {
-            this.xCon = xCon;
-        }
+        #endregion Methods
     }
 }

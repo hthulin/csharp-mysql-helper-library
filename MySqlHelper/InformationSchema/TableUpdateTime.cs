@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using MySql.Data.MySqlClient;
 
 namespace MySql.MysqlHelper.InformationSchema
 {
@@ -12,10 +8,16 @@ namespace MySql.MysqlHelper.InformationSchema
     /// </summary>
     public class TableUpdateTime
     {
+        #region Fields
+
         private readonly object _lock = new object();
         private Dictionary<Tuple<string, string, string>, DateTime> dictUpdates = new Dictionary<Tuple<string, string, string>, DateTime>();
-        private MultiCon multiCon = null;
         private DateTime lastCheck = new DateTime(1970, 1, 1);
+        private MultiCon multiCon = null;
+
+        #endregion Fields
+
+        #region Constructors
 
         /// <summary>
         /// Constructor for connection string
@@ -32,6 +34,10 @@ namespace MySql.MysqlHelper.InformationSchema
         {
             this.multiCon = multiCon;
         }
+
+        #endregion Constructors
+
+        #region Methods
 
         /// <summary>
         /// Returns true if table has been updated since last HasChanged check. First time always returns true
@@ -52,16 +58,18 @@ namespace MySql.MysqlHelper.InformationSchema
                 string query = "SELECT `UPDATE_TIME` FROM `information_schema`.`TABLES` WHERE `TABLE_SCHEMA`=@database && `TABLE_NAME`=@table LIMIT 1;";
 
                 DateTime lastModified = multiCon.GetObject<DateTime>(query, false, new ParameterData("database", database), new ParameterData("table", table));
-                
+
                 if (!dictUpdates.ContainsKey(identifier))
                     dictUpdates.Add(identifier, lastModified);
                 else
                     if (dictUpdates[identifier] == lastModified)
-                        return false;
-                    else
-                        dictUpdates[identifier] = lastModified;
+                    return false;
+                else
+                    dictUpdates[identifier] = lastModified;
             }
             return true;
         }
+
+        #endregion Methods
     }
 }
